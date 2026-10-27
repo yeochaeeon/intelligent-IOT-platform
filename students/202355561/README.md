@@ -86,7 +86,7 @@ ConfigMap을 수정한 뒤 이미 배포된 Pod에 반영할 때는 `oc rollout 
 
 ## 5. 배포 결과 및 증빙
 
-**현재 상태 (2026-10-27): 로컬 파일 제작 완료, Developer Sandbox 실제 배포는 미검증.** 이 작업 환경에는 `oc` 로그인 세션이 없어 Pod Running, Route 응답, 삭제 후 재배포 성공을 확인하지 못했습니다. 성공 화면이나 명령 출력을 임의로 만들지 않았습니다.
+**현재 상태 (2026-10-27): GitHub `main`에 파일 Push 완료, Developer Sandbox 실제 배포는 미검증.** 이 작업 환경에는 `oc` 로그인 세션이 없어 Pod Running, Route 응답, 삭제 후 재배포 성공을 확인하지 못했습니다. 성공 화면이나 명령 출력을 임의로 만들지 않았습니다.
 
 배포 후 아래 자료를 `images/`에 추가하고 이 절의 미검증 문구를 실제 결과로 교체합니다.
 
@@ -117,5 +117,5 @@ ConfigMap을 수정한 뒤 이미 배포된 Pod에 반영할 때는 `oc rollout 
 - [ ] Route HTTPS 접속과 Pod Running 확인
 - [ ] `oc delete -f k8s/` 후 재배포 확인
 - [ ] 실제 캡처를 `images/`에 추가하고 이 README의 배포 결과 갱신
-- [ ] GitHub 저장소에 commit·push 후 저장소 URL 제출
+- [x] GitHub 저장소에 commit·push 완료 — 제출 URL: https://github.com/yeochaeeon/intelligent-IOT-platform
 
