@@ -11,6 +11,7 @@ oc 가 있다면 아래와 같이 해도 결과는 같습니다.
      --dry-run=client -o yaml
 """
 from pathlib import Path
+import base64
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC, K8S = ROOT / "src", ROOT / "k8s"
@@ -35,7 +36,10 @@ write(
     "# Deployment 에서 /opt/app-root/app 에 볼륨으로 마운트됩니다.\n"
     "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: chaeeon-cv-app\n  labels:\n" + LABELS,
     block("server.py", (SRC / "server.py").read_text(encoding="utf-8"))
-    + block("index.html", (SRC / "index.html").read_text(encoding="utf-8")),
+    + block("index.html", (SRC / "index.html").read_text(encoding="utf-8"))
+    + block("killingpart.jpg.b64", base64.b64encode((SRC / "assets/killingpart.jpg").read_bytes()).decode())
+    + "".join(block(name, (SRC / "assets" / name).read_text(encoding="utf-8"))
+              for name in ("alarmclock.svg", "hankyul.svg", "jobmate.svg", "pnubuddy.svg")),
 )
 
 write(

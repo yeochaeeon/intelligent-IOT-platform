@@ -177,6 +177,9 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
 .portfolio-nav { position: sticky; top: 0; z-index: 4; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 10px 0 14px; background: var(--surface); border-bottom: 1px solid var(--line); }
 .portfolio-nav a { color: var(--muted); text-decoration: none; border-radius: 999px; padding: 4px 11px; font: 13px "IBM Plex Mono", monospace; }
 .portfolio-nav a:hover, .portfolio-nav a:focus-visible { color: var(--text); background: var(--line); }
+.lang-switch { display: flex; gap: 3px; margin-left: auto; padding: 3px; border: 1px solid var(--line); border-radius: 9px; }
+.lang-switch button { cursor: pointer; border: 0; border-radius: 6px; padding: 5px 10px; color: var(--muted); background: transparent; font: 600 12px "IBM Plex Mono", monospace; }
+.lang-switch button[aria-pressed="true"] { color: var(--bg); background: var(--z); }
 .hero-panel { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, .8fr); gap: 28px; margin: 30px 0 52px; }
 .hero-copy { padding: clamp(24px, 4vw, 48px); background: linear-gradient(140deg, color-mix(in srgb, var(--z) 12%, var(--surface)), var(--surface) 58%); border: 1px solid var(--line); border-radius: 24px; }
 .eyebrow { color: var(--y); font: 13px "IBM Plex Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
@@ -214,9 +217,8 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
 .experience-card li, .project-card li { margin: 8px 0; }
 .project-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 .project-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
-.project-art { min-height: 150px; padding: 20px; display: flex; align-items: end; justify-content: space-between; border-bottom: 1px solid var(--line); background: radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--z) 30%, transparent), transparent 36%), linear-gradient(125deg, color-mix(in srgb, var(--z) 15%, var(--surface)), color-mix(in srgb, var(--y) 10%, var(--surface))); }
-.project-art strong { font: 500 38px "IBM Plex Mono", monospace; color: var(--text); opacity: .9; }
-.project-art span { font: 12px "IBM Plex Mono", monospace; color: var(--muted); }
+.project-art { aspect-ratio: 16 / 9; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg); }
+.project-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .project-content { padding: 22px; flex: 1; }
 .project-content p { margin: 8px 0; }
 .project-card .tags { margin-top: 16px; }
@@ -331,6 +333,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, reduced ? 0 : ms));
 
 const out = $("out"), term = $("term"), input = $("cmd"), form = $("form");
 let P = null;              // profile.json
+let guiLang = store.get("guiLang") === "en" ? "en" : "ko";
 let INFO = null;           // /api/info (마지막 응답)
 let cwd = "~";
 const hist = []; let hIdx = 0;
@@ -760,66 +763,95 @@ function setMode(m) {
 $("btnTerm").onclick = () => setMode("term");
 $("btnGui").onclick = () => setMode("gui");
 
-/* ── Portfolio (GUI) 렌더링 ───────────────────────── */
+/* ── Portfolio (GUI) ──────────────────────────────── */
 function renderGui() {
   if (!P) return;
   const g = $("guiInner");
-  const tagRow = (tags) => h("div", { class: "tags" }, ...tags.map(t => h("span", {}, t)));
-  const nav = h("nav", { class: "portfolio-nav", "aria-label": "포트폴리오 목차" },
-    ...[["research", "Research"], ["spotlight", "SO-101"], ["experience", "Experience"], ["projects", "Projects"], ["skills", "Skills"], ["awards", "Awards"], ["education", "Education"]].map(([id, label]) => h("a", { href: `#${id}`, onclick: (e) => { e.preventDefault(); $(id)?.scrollIntoView({ behavior: reduced ? "instant" : "smooth" }); } }, label)));
+  const ko = guiLang === "ko";
+  document.documentElement.lang = ko ? "ko" : "en";
+  const pick = (obj, key) => ko ? (obj[key + "Ko"] || obj[key]) : (obj[key + "En"] || obj[key]);
+  const t = (kr, en) => ko ? kr : en;
+  const tagRow = tags => h("div", { class: "tags" }, ...tags.map(x => h("span", {}, x)));
+  const sections = [
+    ["research", t("연구 분야", "Research")], ["spotlight", "SO-101"],
+    ["experience", t("경험", "Experience")], ["projects", t("프로젝트", "Projects")],
+    ["skills", t("기술", "Skills")], ["awards", t("수상", "Awards")],
+    ["education", t("학력", "Background")]
+  ];
+  const nav = h("nav", { class: "portfolio-nav", "aria-label": t("포트폴리오 목차", "Portfolio navigation") },
+    ...sections.map(([id, label]) => h("a", { href: `#${id}`, onclick: e => { e.preventDefault(); $(id)?.scrollIntoView({ behavior: reduced ? "instant" : "smooth" }); } }, label)),
+    h("div", { class: "lang-switch", role: "group", "aria-label": t("언어 선택", "Choose language") },
+      ...[["ko", "KOR"], ["en", "ENG"]].map(([lang, label]) => h("button", {
+        type: "button", "aria-pressed": String(guiLang === lang),
+        onclick: () => { if (guiLang === lang) return; const scroll = $("gui").scrollTop; guiLang = lang; store.set("guiLang", lang); renderGui(); $("gui").scrollTop = scroll; }
+      }, label))));
   const section = (id, num, title, intro, content) => h("section", { id },
-    h("div", { class: "section-kicker" }, num), h("h2", {}, title),
+    h("div", { class: "section-kicker" }, ko ? ({"01 / FOCUS":"01 / 연구 분야","02 / RESEARCH CASE":"02 / 연구 사례","03 / EXPERIENCE":"03 / 경험","04 / SELECTED WORK":"04 / 프로젝트","05 / TOOLBOX":"05 / 기술 스택","06 / RECOGNITION":"06 / 수상","07 / BACKGROUND":"07 / 학력·활동"}[num] || num) : num), h("h2", {}, title),
     h("p", { class: "section-intro" }, intro), content);
+  const sp = P.researchSpotlight;
   g.replaceChildren(
     nav,
     h("div", { class: "hero-panel" },
       h("div", { class: "hero-copy" },
-        h("div", { class: "eyebrow" }, "Policy learning · Sim2Real"),
-        h("h1", {}, P.name, h("small", {}, `${P.nameKo} · ${P.education[0].school}`)),
-        h("p", { class: "lead" }, P.taglineKo),
-        h("p", { class: "meta" }, P.tagline),
-        h("div", { class: "hero-actions" }, link("mailto:" + P.contact.email, "Email me ↗"), link(P.contact.github, "GitHub ↗"))),
-      h("div", { class: "hero-visual" },
-        document.querySelector("#robotVisual").content.firstElementChild.cloneNode(true))),
-    section("research", "01 / FOCUS", "무엇을 연구했나요?", "실물 시연과 MuJoCo 데이터를 결합해 로봇 조작 정책을 학습하고, Sim2Real 환경에서 평가합니다.",
-      h("div", { class: "research-grid" }, ...P.interests.map((t, i) => h("div", { class: "research-card" }, h("span", { class: "research-icon", "aria-hidden": "true" }, String(i + 1).padStart(2,"0")), h("div", {}, h("p", {}, t), h("p", { class: "research-ko" }, P.interestDetailsKo[i])))))),
-    section("spotlight", "02 / RESEARCH CASE", "SO-101 연구 노트", "실물 로봇에서 무엇을 시험했고, 어디서 한계를 발견했는지 정리했습니다.",
+        h("div", { class: "eyebrow" }, t("로봇 정책 학습 · Sim2Real", "Policy learning · Sim2Real")),
+        h("h1", {}, ko ? P.nameKo : P.name, h("small", {}, ko ? `${P.name} · ${P.education[0].schoolKo}` : `${P.nameKo} · ${P.education[0].school}`)),
+        h("p", { class: "lead" }, ko ? P.taglineKo : P.tagline),
+        h("div", { class: "hero-actions" }, link("mailto:" + P.contact.email, t("이메일 ↗", "Email me ↗")), link(P.contact.github, "GitHub ↗"))),
+      h("div", { class: "hero-visual" }, document.querySelector("#robotVisual").content.firstElementChild.cloneNode(true))),
+    section("research", "01 / FOCUS", t("무엇을 연구했나요?", "What do I research?"),
+      t("실물 시연과 MuJoCo 데이터를 결합해 로봇 조작 정책을 학습하고, Sim2Real 환경에서 평가합니다.", "I combine physical and MuJoCo demonstrations to learn robot manipulation policies and evaluate them on real hardware."),
+      h("div", { class: "research-grid" }, ...P.interests.map((x, i) => h("div", { class: "research-card" },
+        h("span", { class: "research-icon", "aria-hidden": "true" }, String(i + 1).padStart(2,"0")),
+        h("div", {}, h("p", {}, ko ? P.interestsKo[i] : x), h("p", { class: "research-ko" }, ko ? P.interestDetailsKo[i] : P.interestDetailsEn[i])))))),
+    section("spotlight", "02 / RESEARCH CASE", t("SO-101 연구 노트", "SO-101 research case"),
+      t("실물 로봇에서 무엇을 시험했고, 어디서 한계를 발견했는지 정리했습니다.", "Experiments on the physical robot, measured outcomes, and observed limitations."),
       h("article", { class: "spotlight" },
-        h("div", { class: "spotlight-head" }, h("div", { class: "section-kicker" }, "PICK & PLACE / PICK & STACK"),
-          h("h3", {}, P.researchSpotlight.title), h("p", {}, P.researchSpotlight.summary), h("p", { class: "setup" }, P.researchSpotlight.setup)),
-        h("div", { class: "metric-grid" }, ...P.researchSpotlight.metrics.map(m => h("div", { class: "metric" },
-          h("strong", {}, m.value, h("small", {}, m.unit)), h("span", {}, m.label)))),
-        h("div", { class: "spotlight-body" }, h("h4", {}, "실험 흐름"),
-          h("div", { class: "method-grid" }, ...P.researchSpotlight.methodSteps.map(step => h("div", { class: "method-step" },
-            h("b", {}, step.label), h("p", {}, step.text)))),
-          h("p", { class: "research-note" }, h("strong", {}, "결과 · "), P.researchSpotlight.evaluation),
-          h("p", { class: "research-note" }, h("strong", {}, "한계 · "), P.researchSpotlight.limitation),
-          h("small", { class: "spotlight-source" }, P.researchSpotlight.source)))),
-    section("experience", "03 / EXPERIENCE", "연구와 경험", "실험 환경 구축부터 실제 로봇 적용, 실패 분석과 데이터 수집까지 이어지는 경험입니다.",
+        h("div", { class: "spotlight-head" }, h("div", { class: "section-kicker" }, t("블록 옮기기 / 블록 쌓기", "PICK & PLACE / PICK & STACK")),
+          h("h3", {}, pick(sp,"title")), h("p", {}, pick(sp,"summary")), h("p", { class: "setup" }, pick(sp,"setup"))),
+        h("div", { class: "metric-grid" }, ...sp.metrics.map(m => h("div", { class: "metric" },
+          h("strong", {}, m.value, h("small", {}, pick(m,"unit"))), h("span", {}, pick(m,"label"))))),
+        h("div", { class: "spotlight-body" }, h("h4", {}, t("실험 흐름", "Experimental process")),
+          h("div", { class: "method-grid" }, ...sp.methodSteps.map(step => h("div", { class: "method-step" },
+            h("b", {}, pick(step,"label")), h("p", {}, pick(step,"text"))))),
+          h("p", { class: "research-note" }, h("strong", {}, t("결과 · ", "Results · ")), pick(sp,"evaluation")),
+          h("p", { class: "research-note" }, h("strong", {}, t("한계 · ", "Limitations · ")), pick(sp,"limitation")),
+          h("small", { class: "spotlight-source" }, pick(sp,"source"))))),
+    section("experience", "03 / EXPERIENCE", t("연구와 경험", "Research and experience"),
+      t("실험 환경 구축부터 실제 로봇 적용, 실패 분석과 데이터 수집까지 이어지는 경험입니다.", "From building experimental environments to physical deployment, failure analysis, and data collection."),
       h("div", { class: "experience-list" }, ...P.experience.map(e => h("article", { class: "experience-card" },
-        h("h3", {}, e.role), h("div", { class: "meta" }, `${e.org} · ${e.period}`),
-        h("ul", {}, ...e.points.map(p => h("li", {}, p))), tagRow(e.tags))))),
-    section("projects", "04 / SELECTED WORK", "프로젝트", "만든 것과 맡은 역할을 간단히 살펴볼 수 있습니다.",
-      h("div", { class: "project-grid" }, ...P.projects.map((p, i) => h("article", { class: "project-card" },
-        h("div", { class: "project-art", "aria-hidden": "true" }, h("strong", {}, String(i + 1).padStart(2, "0")), h("span", {}, p.tags.slice(0, 2).join(" / "))),
-        h("div", { class: "project-content" }, h("h3", {}, p.name), h("div", { class: "meta" }, `${p.role} · ${p.period}`),
-          h("p", {}, p.summary), h("ul", {}, ...p.points.map(x => h("li", {}, x))),
-          p.link ? link(p.link, "프로젝트 코드 보기 ↗") : null, tagRow(p.tags)))))),
-    section("skills", "05 / TOOLBOX", "기술 스택", "연구와 제품 개발에서 사용한 언어와 도구입니다.",
-      h("div", { class: "skills-grid" }, ...Object.entries(P.skills).map(([k, v]) => h("div", { class: "skills-card" }, h("h3", {}, k), tagRow(v))))),
-    section("awards", "06 / RECOGNITION", "수상과 장학", "프로젝트와 학업에서 얻은 결과입니다.",
-      h("div", { class: "simple-grid" }, ...P.awards.map(a => h("div", { class: "simple-card" }, h("h3", {}, a.titleKo || a.title), h("p", { class: "award-en" }, a.title), h("p", { class: "meta" }, `${a.org} · ${a.year}`))))),
-    section("education", "07 / BACKGROUND", "교육과 활동", "학업과 커뮤니티 활동입니다.",
-      h("div", { class: "simple-grid" }, ...P.education.map(e => h("div", { class: "simple-card" }, h("h3", {}, e.school), h("p", { class: "meta" }, `${e.degree} · ${e.period} · ${e.note}`))), ...P.activities.map(a => h("div", { class: "simple-card" }, h("p", {}, a))))),
+        h("h3", {}, pick(e,"role")), h("div", { class: "meta" }, `${pick(e,"org")} · ${pick(e,"period")}`),
+        h("ul", {}, ...pick(e,"points").map(x => h("li", {}, x))), tagRow(e.tags))))),
+    section("projects", "04 / SELECTED WORK", t("프로젝트", "Projects"),
+      t("만든 것과 맡은 역할을 간단히 살펴볼 수 있습니다.", "Selected projects and my contributions."),
+      h("div", { class: "project-grid" }, ...P.projects.map(p => h("article", { class: "project-card" },
+        h("div", { class: "project-art" }, h("img", { src: p.image, alt: t(`${pick(p,"name")} 프로젝트 이미지`, `Project image for ${p.name}`), loading: "lazy" })),
+        h("div", { class: "project-content" }, h("h3", {}, pick(p,"name")), h("div", { class: "meta" }, `${pick(p,"role")} · ${pick(p,"period")}`),
+          h("p", {}, pick(p,"summary")), h("ul", {}, ...pick(p,"points").map(x => h("li", {}, x))),
+          p.link ? link(p.link, t("프로젝트 코드 보기 ↗", "View project code ↗")) : null, tagRow(p.tags)))))),
+    section("skills", "05 / TOOLBOX", t("기술 스택", "Skills"),
+      t("연구와 제품 개발에서 사용한 언어와 도구입니다.", "Languages and tools used in research and product development."),
+      h("div", { class: "skills-grid" }, ...Object.entries(P.skills).map(([k, v]) => h("div", { class: "skills-card" },
+        h("h3", {}, ko ? ({"Programming":"프로그래밍","ML & Robotics":"머신러닝·로보틱스","Systems & Dev":"시스템·개발","Language":"어학"}[k] || k) : k), tagRow(v))))),
+    section("awards", "06 / RECOGNITION", t("수상과 장학", "Awards and scholarships"),
+      t("프로젝트와 학업에서 얻은 결과입니다.", "Recognition for academic work and projects."),
+      h("div", { class: "simple-grid" }, ...P.awards.map(a => h("div", { class: "simple-card" },
+        h("h3", {}, ko ? a.titleKo : a.title),
+        h("p", { class: "meta" }, `${ko ? "부산대학교" : a.org} · ${ko ? a.yearKo : a.year}`))))),
+    section("education", "07 / BACKGROUND", t("교육과 활동", "Education and activities"),
+      t("학업과 커뮤니티 활동입니다.", "Education and community involvement."),
+      h("div", { class: "simple-grid" }, ...P.education.map(e => h("div", { class: "simple-card" },
+        h("h3", {}, pick(e,"school")), h("p", { class: "meta" }, `${pick(e,"degree")} · ${pick(e,"period")} · ${pick(e,"note")}`))),
+        ...(ko ? P.activitiesKo : P.activities).map(a => h("div", { class: "simple-card" }, h("p", {}, a))))),
     runtimeBox()
   );
 }
 function runtimeBox() {
   const box = h("div", { class: "runtime", id: "runtime" });
   const paint = () => box.replaceChildren(
-    INFO ? h("span", {}, "이 페이지는 ", h("b", {}, INFO.podName), ` (namespace ${INFO.namespace}, node ${INFO.nodeName}) 에서 응답했습니다. `)
-         : "Pod 정보를 불러오지 못했습니다. ",
-    h("button", { type: "button", onclick: async () => { await refreshInfo(); paint(); } }, "다시 요청하기"),
+    INFO ? h("span", {}, guiLang === "ko" ? "이 페이지는 " : "This page was served by ", h("b", {}, INFO.podName),
+      guiLang === "ko" ? ` (namespace ${INFO.namespace}, node ${INFO.nodeName}) 에서 응답했습니다. ` : ` (namespace ${INFO.namespace}, node ${INFO.nodeName}). `)
+         : (guiLang === "ko" ? "Pod 정보를 불러오지 못했습니다. " : "Pod information is unavailable. "),
+    h("button", { type: "button", onclick: async () => { await refreshInfo(); paint(); } }, guiLang === "ko" ? "다시 요청하기" : "Refresh"),
     h("br"), "Red Hat OpenShift · ubi9/python-311 · ConfigMap / Secret / Downward API / Probes");
   paint();
   return box;

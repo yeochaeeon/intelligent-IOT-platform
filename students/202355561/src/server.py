@@ -6,6 +6,7 @@ chaeeon-cv : 터미널형 포트폴리오 웹 서버
 - Secret 으로 주입된 비밀번호로 /api/sudo 검증
 - /healthz (Liveness), /readyz (Readiness) 제공
 """
+import base64
 import hmac
 import json
 import os
@@ -117,6 +118,21 @@ class Handler(BaseHTTPRequestHandler):
             if not f.is_file():
                 return self._json(503, {"error": "index.html not mounted"})
             return self._send(200, f.read_bytes(), "text/html; charset=utf-8")
+        if path.startswith("/assets/"):
+            name = path.removeprefix("/assets/")
+            assets = {"killingpart.jpg": ("killingpart.jpg.b64", "image/jpeg"),
+                      "alarmclock.svg": ("alarmclock.svg", "image/svg+xml"),
+                      "hankyul.svg": ("hankyul.svg", "image/svg+xml"),
+                      "jobmate.svg": ("jobmate.svg", "image/svg+xml"),
+                      "pnubuddy.svg": ("pnubuddy.svg", "image/svg+xml")}
+            if name not in assets:
+                return self._json(404, {"error": "asset not found"})
+            filename, ctype = assets[name]
+            f = APP_DIR / filename
+            if not f.is_file():
+                return self._json(404, {"error": "asset not mounted"})
+            body = base64.b64decode(f.read_text()) if name.endswith(".jpg") else f.read_bytes()
+            return self._send(200, body, ctype)
         if path == "/api/profile":
             f = PROFILE_DIR / "profile.json"
             if not f.is_file():

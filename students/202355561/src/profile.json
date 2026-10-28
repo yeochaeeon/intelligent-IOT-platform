@@ -16,7 +16,12 @@
       "degree": "B.S. Candidate, Computer Science and Engineering",
       "period": "Mar. 2023 – Present",
       "place": "Busan, South Korea",
-      "note": "Cumulative GPA 3.97 / 4.5"
+      "note": "Cumulative GPA 3.97 / 4.5",
+      "schoolKo": "부산대학교",
+      "degreeKo": "컴퓨터공학과 학사과정",
+      "periodKo": "2023년 3월 – 현재",
+      "placeKo": "부산, 대한민국",
+      "noteKo": "평점 3.97 / 4.5"
     }
   ],
   "expertise": [
@@ -55,6 +60,17 @@
         "Diffusion Policy",
         "SmolVLA",
         "ROS"
+      ],
+      "roleKo": "학부연구생",
+      "orgKo": "디지털 트윈 및 피지컬 AI 연구실(DTPLAB), 부산대학교",
+      "periodKo": "2026년 1월 – 현재",
+      "pointsKo": [
+        "NVIDIA Isaac Sim / Isaac Lab에서 DofBot 로봇팔의 강화학습 기반 물체 옮기기 정책을 개발했습니다. 관절 보정, 액추에이터 조정, PPO/SAC 학습과 ROS 기반 실물 배포를 수행했습니다.",
+        "실물 로봇 배포 과정의 Sim2Real 차이를 분석하고 도메인 랜덤화와 파라미터 조정을 검토했습니다.",
+        "LeRobot SO-101용 MuJoCo 환경과 역기구학 기반 다중 물체 옮기기 시연 생성기를 구현했습니다.",
+        "약 200개의 성공 시연을 수집해 ACT, Diffusion Policy, SmolVLA를 학습하고 파지 위치 오차, 미끄러짐, 낙하를 분석했습니다.",
+        "기존 시연에 없는 실패 상태를 보완하기 위해 HIL/DAgger 방식의 복구 데이터 수집 및 재학습 흐름을 구축했습니다.",
+        "사전 학습한 ACT를 기본 제어기로 사용하고 제한된 관절 보정값을 학습하는 MuJoCo 잔차 강화학습을 설계했습니다."
       ]
     },
     {
@@ -73,6 +89,15 @@
         "ResNet50",
         "U-Net++",
         "Satellite Imagery"
+      ],
+      "roleKo": "팀원(FirstAID 팀)",
+      "orgKo": "데이터 크리에이터 캠프 · 과학기술정보통신부 / NIA",
+      "periodKo": "2025년 8월 – 10월",
+      "pointsKo": [
+        "위성 영상에서 대기오염 배출원을 찾기 위한 탐지·키포인트·회귀·분할 딥러닝 파이프라인을 구축했습니다.",
+        "YOLO 기반 굴뚝 탐지로 배출원 위치를 파악하고 mAP@IoU=0.5로 평가했습니다.",
+        "YOLO 탐지와 키포인트, ResNet50 회귀 모델을 결합해 굴뚝 높이를 추정했으며 검증 RMSE는 8.8m였습니다.",
+        "RGB, NIR, NDVI, NDWI를 활용한 ResNet50 U-Net++ 기반 산업단지 분할을 수행했습니다."
       ]
     }
   ],
@@ -92,7 +117,16 @@
         "Jetpack Compose",
         "Startup"
       ],
-      "link": "https://github.com/ApptiveDev/KillingPoint-FE"
+      "link": "https://github.com/ApptiveDev/KillingPoint-FE",
+      "nameKo": "킬링파트",
+      "roleKo": "안드로이드 개발 · APPTIVE IT 창업 동아리",
+      "periodKo": "2025년 – 현재",
+      "summaryKo": "음악을 중심으로 취향을 나누는 소셜 네트워크 서비스.",
+      "pointsKo": [
+        "Kotlin과 Jetpack Compose로 안드로이드 기능을 개발했습니다. 크로스플랫폼 앱은 App Store 라이프스타일 부문 141위를 기록했습니다.",
+        "중소벤처기업부 창업지원 아이디어 프로그램에 선정되어 1차 심사를 통과했습니다(2026년 5월)."
+      ],
+      "image": "/assets/killingpart.jpg"
     },
     {
       "id": "alarmclock",
@@ -109,7 +143,17 @@
         "STM32",
         "C",
         "Embedded"
-      ]
+      ],
+      "nameKo": "자율주행 도망가는 알람시계",
+      "roleKo": "임베디드 시스템 개발",
+      "periodKo": "2025년 가을",
+      "summaryKo": "사용자에게서 멀어지며 움직이고 물을 뿌려야 꺼지는 STM32 알람시계.",
+      "pointsKo": [
+        "STM32와 C를 사용하고 초음파·수분 센서, LCD, 블루투스를 연결했습니다.",
+        "초음파 센서로 주변 장애물을 피하며 자율적으로 이동하도록 구현했습니다.",
+        "수분 센서를 이용해 장치에 물을 뿌리면 알람이 꺼지도록 했습니다."
+      ],
+      "image": "/assets/alarmclock.svg"
     },
     {
       "id": "hankyul",
@@ -125,7 +169,15 @@
         "TFLite",
         "STT"
       ],
-      "link": "https://github.com/2025AndroidTermProject/Hangyul"
+      "link": "https://github.com/2025AndroidTermProject/Hangyul",
+      "nameKo": "한결",
+      "roleKo": "개발",
+      "periodKo": "2025년 봄",
+      "summaryKo": "치매 환자의 기억 훈련과 일상 지원을 돕는 앱.",
+      "pointsKo": [
+        "음성 인식, 지도 API, 기기 내 TensorFlow Lite 한국어 감정 분류 모델을 활용한 기능을 구현했습니다."
+      ],
+      "image": "/assets/hankyul.svg"
     },
     {
       "id": "jobmate",
@@ -140,7 +192,15 @@
         "Hackathon",
         "AI",
         "Frontend"
-      ]
+      ],
+      "nameKo": "잡메이트",
+      "roleKo": "기획 / 프론트엔드 / AI 개발",
+      "periodKo": "2025년",
+      "summaryKo": "취업 준비 플랫폼 · 제6회 부산대학교 창의융합 SW 해커톤 장려상.",
+      "pointsKo": [
+        "학생의 취업 준비를 돕는 AI 기반 피드백 및 분석 기능을 설계했습니다."
+      ],
+      "image": "/assets/jobmate.svg"
     },
     {
       "id": "pnubuddy",
@@ -154,7 +214,15 @@
       "tags": [
         "Hackathon",
         "Frontend"
-      ]
+      ],
+      "nameKo": "PNU 버디",
+      "roleKo": "프론트엔드 개발",
+      "periodKo": "2024년",
+      "summaryKo": "교내 중고거래 안전 플랫폼 · 제5회 부산대학교 창의융합 SW 해커톤 장려상.",
+      "pointsKo": [
+        "사기 예방과 상품 추천을 위한 화면과 서비스 흐름을 구현했습니다."
+      ],
+      "image": "/assets/pnubuddy.svg"
     }
   ],
   "skills": {
@@ -194,25 +262,29 @@
       "title": "Academic Excellence Scholarship",
       "org": "Pusan National University",
       "year": "Fall 2024, Fall 2025, Spring 2026, Fall 2026",
-      "titleKo": "성적우수 장학금"
+      "titleKo": "성적우수 장학금",
+      "yearKo": "2024년 2학기, 2025년 2학기, 2026년 1·2학기"
     },
     {
       "title": "Third Place, 6th PNU Creative Convergence SW Hackathon",
       "org": "Pusan National University",
       "year": "2025",
-      "titleKo": "제6회 부산대학교 창의융합 SW 해커톤 장려상"
+      "titleKo": "제6회 부산대학교 창의융합 SW 해커톤 장려상",
+      "yearKo": "2025년"
     },
     {
       "title": "Third Place, 5th PNU Creative Convergence SW Hackathon",
       "org": "Pusan National University",
       "year": "2024",
-      "titleKo": "제5회 부산대학교 창의융합 SW 해커톤 장려상"
+      "titleKo": "제5회 부산대학교 창의융합 SW 해커톤 장려상",
+      "yearKo": "2024년"
     },
     {
       "title": "Grand Prize, SW Innovation Startup Hackathon",
       "org": "Pusan National University",
       "year": "2023",
-      "titleKo": "SW 혁신창업 해커톤 최우수상"
+      "titleKo": "SW 혁신창업 해커톤 최우수상",
+      "yearKo": "2023년"
     }
   ],
   "activities": [
@@ -228,50 +300,88 @@
       {
         "value": "200",
         "unit": "개",
-        "label": "실물 원격 조종 시연"
+        "label": "실물 원격 조종 시연",
+        "labelEn": "Physical teleoperation demos",
+        "unitEn": "demos"
       },
       {
         "value": "3,200",
         "unit": "개",
-        "label": "MuJoCo 자동 생성 시연"
+        "label": "MuJoCo 자동 생성 시연",
+        "labelEn": "MuJoCo generated demos",
+        "unitEn": "demos"
       },
       {
         "value": "4.95 / 5",
         "unit": "개",
-        "label": "블록 옮기기 평균"
+        "label": "블록 옮기기 평균",
+        "labelEn": "Average blocks moved",
+        "unitEn": "blocks"
       },
       {
         "value": "4.6 / 5",
         "unit": "개",
-        "label": "블록 쌓기 평균"
+        "label": "블록 쌓기 평균",
+        "labelEn": "Average blocks stacked",
+        "unitEn": "blocks"
       }
     ],
     "evaluation": "ACT 최종 모델의 실물 평가: 과제별 20회, 회당 제한시간 5분. 평균 수행 시간은 옮기기 34.3초, 쌓기 58.5초였습니다.",
     "methodSteps": [
       {
         "label": "01 · 시연 수집",
-        "text": "Leader–Follower 원격 조종으로 실물 시연을 기록하고, MuJoCo에서는 IK 스크립트와 환경 랜덤화로 다양한 배치를 생성했습니다."
+        "text": "Leader–Follower 원격 조종으로 실물 시연을 기록하고, MuJoCo에서는 IK 스크립트와 환경 랜덤화로 다양한 배치를 생성했습니다.",
+        "labelEn": "01 · Demonstrations",
+        "textEn": "Recorded physical demonstrations through leader–follower teleoperation; generated varied layouts in MuJoCo with IK scripts and environment randomization."
       },
       {
         "label": "02 · ACT 학습",
-        "text": "상단·손목 카메라와 관절 상태를 입력으로 받아 여러 스텝의 관절 동작을 한 번에 예측했습니다."
+        "text": "상단·손목 카메라와 관절 상태를 입력으로 받아 여러 스텝의 관절 동작을 한 번에 예측했습니다.",
+        "labelEn": "02 · ACT training",
+        "textEn": "Used overhead and wrist cameras plus joint state to predict a chunk of future joint actions."
       },
       {
         "label": "03 · 실패 분석",
-        "text": "파지 중심이 어긋나거나 그리퍼 각도가 틀어지는 문제를 실물 Rollout에서 관찰했습니다."
+        "text": "파지 중심이 어긋나거나 그리퍼 각도가 틀어지는 문제를 실물 Rollout에서 관찰했습니다.",
+        "labelEn": "03 · Failure analysis",
+        "textEn": "Observed off-center grasps and incorrect gripper angles during physical rollouts."
       },
       {
         "label": "04 · 잔차 정책",
-        "text": "기본 ACT 궤적은 유지하고 파지 직전 약 30 tick에서만 작은 관절 보정값을 학습했습니다."
+        "text": "기본 ACT 궤적은 유지하고 파지 직전 약 30 tick에서만 작은 관절 보정값을 학습했습니다.",
+        "labelEn": "04 · Residual policy",
+        "textEn": "Kept the base ACT trajectory and learned small joint corrections only for roughly 30 ticks before grasping."
       }
     ],
     "limitation": "잔차 강화학습 실험에서 블록 배치 성공 수의 유의미한 개선은 확인되지 않았습니다. 파지 구간으로 학습 범위를 좁혀 긴 에피소드의 보상 할당 문제를 완화하는 방향을 검토했습니다.",
-    "source": "LeRobot SO-101 Lab Seminar · 실험 및 발표 자료"
+    "source": "LeRobot SO-101 Lab Seminar · 실험 및 발표 자료",
+    "titleEn": "LeRobot SO-101 · Robot manipulation across simulation and reality",
+    "summaryEn": "Trained an ACT policy for moving and stacking five blocks using both physical demonstrations and MuJoCo data.",
+    "setupEn": "The policy takes overhead and wrist camera images plus six-dimensional joint state, and predicts motion for five joints and a gripper.",
+    "evaluationEn": "Physical evaluation of the final ACT model: 20 trials per task, five-minute limit each. Mean completion times were 34.3 seconds for moving and 58.5 seconds for stacking.",
+    "limitationEn": "Residual reinforcement learning did not show a meaningful improvement in successfully placed blocks. We explored narrowing learning to the grasp phase to address reward assignment over long episodes.",
+    "sourceEn": "LeRobot SO-101 Lab Seminar · experiments and presentation"
   },
   "interestDetailsKo": [
     "ACT 정책의 동작에 관절별 보정값을 더해 파지 오차를 보정하는 방법을 실험했습니다.",
     "상단·손목 카메라 영상과 관절 상태로 블록을 옮기고 쌓는 동작을 학습했습니다.",
     "MuJoCo 시연과 실물 시연을 결합하고, 환경 차이를 조정해 실제 로봇에서 평가했습니다.",
     "SmolVLA를 학습하고 로봇팔의 파지 실패 사례를 분석했습니다."
+  ],
+  "activitiesKo": [
+    "학술 동아리 APPTIVE(IT 창업), AID(AI 개발), KEEPER(정보보안) 활동 · 2023년 3월 – 2026년 8월",
+    "부산대학교 정보컴퓨터공학부 학생회 활동 · 2024년 1월 – 12월"
+  ],
+  "interestDetailsEn": [
+    "Explored joint-level residual corrections to reduce grasping errors in an ACT policy.",
+    "Learned block moving and stacking from overhead and wrist cameras plus joint states.",
+    "Combined MuJoCo and physical demonstrations, then evaluated the policy on a real robot.",
+    "Trained SmolVLA and analyzed grasp failures on a robot arm."
+  ],
+  "interestsKo": [
+    "로봇 조작을 위한 강화학습",
+    "시각 기반 로봇 제어와 모방학습",
+    "로봇 학습의 Sim2Real 전이",
+    "로봇 조작을 위한 시각·언어·행동 모델"
   ]
 }
