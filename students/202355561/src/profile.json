@@ -1,0 +1,138 @@
+{
+  "name": "Yeo ChaeEon",
+  "nameKo": "여채언",
+  "handle": "chaeeon",
+  "headline": "Robot Learning · Reinforcement Learning · Computer Vision",
+  "tagline": "Teaching robots to grasp the real world — from simulation to reality.",
+  "taglineKo": "시뮬레이션에서 배운 로봇이 현실에서도 잘 잡도록 연구합니다.",
+  "location": "Busan, South Korea",
+  "contact": {
+    "email": "codjs2659@gmail.com",
+    "github": "https://github.com/yeochaeeon"
+  },
+  "education": [
+    {
+      "school": "Pusan National University",
+      "degree": "B.S. Candidate, Computer Science and Engineering",
+      "period": "Mar. 2023 – Present",
+      "place": "Busan, South Korea",
+      "note": "Cumulative GPA 3.97 / 4.5"
+    }
+  ],
+  "expertise": ["Robot Learning", "Reinforcement Learning", "Computer Vision", "Deep Learning", "Sim2Real Transfer"],
+  "interests": [
+    "Reinforcement Learning for Robotic Manipulation",
+    "Vision-based Robot Control and Imitation Learning",
+    "Sim2Real Transfer for Robot Learning",
+    "Vision-Language-Action Models for Robotic Manipulation"
+  ],
+  "experience": [
+    {
+      "id": "dtplab",
+      "role": "Undergraduate Researcher",
+      "org": "Digital Twin & Physical AI Lab (DTPLAB), Pusan National University",
+      "period": "Jan. 2026 – Present",
+      "points": [
+        "Developed RL-based pick-and-place policies for a DofBot manipulator in NVIDIA Isaac Sim / Isaac Lab — real-to-sim joint calibration, actuator tuning, PPO/SAC training, and ROS-based deployment to the physical robot.",
+        "Investigated the Sim2Real gap during physical deployment; explored domain randomization and parameter tuning for more robust control.",
+        "Built a MuJoCo environment for the LeRobot SO-101 with an inverse-kinematics scripted teacher for multi-object pick-and-place.",
+        "Collected ~200 successful demonstrations and trained ACT, Diffusion Policy, and SmolVLA; analyzed failures such as grasp misalignment, slips, and drops.",
+        "Built HIL/DAgger-style recovery-data collection and fine-tuning pipelines to cover failure states missing from the original demos.",
+        "Designed residual RL in MuJoCo: a pretrained ACT policy as base controller plus an RL policy learning bounded corrections (a_t = a_t^base + Δa_t^RL), with staged dense rewards and geometry-based target inference."
+      ],
+      "tags": ["Isaac Lab", "MuJoCo", "LeRobot", "PPO/SAC", "ACT", "Diffusion Policy", "SmolVLA", "ROS"]
+    },
+    {
+      "id": "datacamp",
+      "role": "Team Member (Team FirstAID)",
+      "org": "Data Creator Camp — Ministry of Science and ICT / NIA",
+      "period": "Aug. 2025 – Oct. 2025",
+      "points": [
+        "Built deep-learning pipelines to identify air-pollution emission sources from satellite imagery (detection, keypoints, regression, segmentation).",
+        "YOLO-based chimney detection for source localization, evaluated with mAP@IoU=0.5.",
+        "Chimney height estimation combining YOLO detections + keypoints with a ResNet50 regressor (ROI Align + global features) — validation RMSE 8.8 m.",
+        "Multispectral industrial-complex segmentation (RGB, NIR, NDVI, NDWI) with a ResNet50 U-Net++."
+      ],
+      "tags": ["YOLO", "ResNet50", "U-Net++", "Satellite Imagery"]
+    }
+  ],
+  "projects": [
+    {
+      "id": "killingpart",
+      "name": "Killing Part",
+      "role": "Android Developer · APPTIVE IT Startup Club",
+      "period": "2025 – Present",
+      "summary": "Music-based social networking service.",
+      "points": [
+        "Built Android features with Kotlin and Jetpack Compose; the cross-platform app reached No. 141 in the App Store Lifestyle category.",
+        "Selected for a national startup-support idea program (Ministry of SMEs and Startups) and advanced past the first round (May 2026)."
+      ],
+      "tags": ["Kotlin", "Jetpack Compose", "Startup"],
+      "link": "https://github.com/ApptiveDev/KillingPoint-FE"
+    },
+    {
+      "id": "alarmclock",
+      "name": "Autonomous Runaway Alarm Clock",
+      "role": "Embedded Systems Developer",
+      "period": "Fall 2025",
+      "summary": "An STM32 alarm clock that drives away from you — and only stops when you spray it with water.",
+      "points": [
+        "STM32 + C with ultrasonic and moisture sensors, LCD, and Bluetooth.",
+        "Ultrasonic-based navigation that avoids nearby obstacles while moving autonomously.",
+        "Moisture-sensor dismissal: spray water on the device to turn the alarm off."
+      ],
+      "tags": ["STM32", "C", "Embedded"]
+    },
+    {
+      "id": "hankyul",
+      "name": "Hankyul",
+      "role": "Developer",
+      "period": "Spring 2025",
+      "summary": "Assistive application for people with dementia.",
+      "points": [
+        "Memory-training and daily-assistance features with speech-to-text, a maps API, and an on-device TensorFlow Lite Korean emotion classifier."
+      ],
+      "tags": ["Android", "TFLite", "STT"],
+      "link": "https://github.com/2025AndroidTermProject/Hangyul"
+    },
+    {
+      "id": "jobmate",
+      "name": "JobMate",
+      "role": "PM / Frontend / AI Developer",
+      "period": "2025",
+      "summary": "Career preparation platform — 3rd Place, 6th PNU Creative Convergence SW Hackathon.",
+      "points": [
+        "Designed AI-based feedback and analytics features for student career readiness."
+      ],
+      "tags": ["Hackathon", "AI", "Frontend"]
+    },
+    {
+      "id": "pnubuddy",
+      "name": "PNU-Buddy",
+      "role": "Frontend Developer",
+      "period": "2024",
+      "summary": "Campus second-hand trading safety platform — 3rd Place, 5th PNU Creative Convergence SW Hackathon.",
+      "points": [
+        "Implemented the UI and service flow for fraud prevention and product recommendation."
+      ],
+      "tags": ["Hackathon", "Frontend"]
+    }
+  ],
+  "skills": {
+    "Programming": ["Python", "C", "C++", "Kotlin", "JavaScript/Node.js"],
+    "ML & Robotics": ["PyTorch", "LeRobot", "NVIDIA Isaac Sim/Isaac Lab", "MuJoCo", "YOLO", "ResNet", "U-Net++", "TensorFlow Lite"],
+    "Systems & Dev": ["Linux", "Docker", "AWS", "Git", "MySQL", "Jetpack Compose", "Firebase", "OpenShift"],
+    "Language": ["TOEIC 815"]
+  },
+  "awards": [
+    { "title": "Academic Excellence Scholarship", "org": "Pusan National University", "year": "Fall 2024, Fall 2025, Spring 2026, Fall 2026" },
+    { "title": "Third Place, 6th PNU Creative Convergence SW Hackathon", "org": "Pusan National University", "year": "2025" },
+    { "title": "Third Place, 5th PNU Creative Convergence SW Hackathon", "org": "Pusan National University", "year": "2024" },
+    { "title": "Grand Prize, SW Innovation Startup Hackathon", "org": "Pusan National University", "year": "2023" }
+  ],
+  "activities": [
+    "Academic clubs: APPTIVE (IT entrepreneurship), AID (AI Development), KEEPER (information security) — Mar. 2023 – Aug. 2026",
+    "Member, School of Computer Science and Engineering Student Council — Jan. 2024 – Dec. 2024"
+  ],
+  "updated": "2026-10"
+}

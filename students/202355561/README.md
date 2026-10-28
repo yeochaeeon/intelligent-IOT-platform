@@ -1,121 +1,192 @@
-# 여채언의 AI · Robotics · Cloud 엔지니어 포트폴리오
+# chaeeon-cv — OpenShift 위에서 돌아가는 터미널 포트폴리오
 
-**학번:** 202355561  
-**서비스:** `chaeeon-portfolio`  
-**한 줄 소개:** 로봇·AI 연구와 웹·모바일 개발 경험을 소개하는 반응형 정적 웹사이트
+> 지능형IoT플랫폼 · 나만의 컨테이너 만들기 · 2023XXXXXX 여채언
 
 ## 1. 컨테이너 소개
 
-로봇 조작, 컴퓨터 비전, 웹·모바일 프로젝트를 한곳에서 보여주는 개인 포트폴리오입니다. 과제의 목적에 맞춰 공개된 Red Hat UBI Nginx 이미지를 사용하고, 페이지 전체를 ConfigMap으로 주입했습니다. 따라서 컨테이너 이미지를 직접 빌드하거나 외부 저장소에서 페이지를 내려받지 않아도 됩니다.
+| 항목 | 내용 |
+|---|---|
+| 서비스 이름 | **chaeeon-cv** |
+| 한 줄 설명 | 리눅스 터미널처럼 명령어를 입력해 탐색하는 포트폴리오 웹사이트. 화면에 보이는 Pod 이름·노드·로드밸런싱이 **실제 OpenShift 런타임 정보**입니다. |
+| 접속 주소 | `https://<Route 주소>/` (터미널) · `https://<Route 주소>/#portfolio` (일반 포트폴리오 화면) |
 
-주요 화면은 소개, 대표 프로젝트 6개, 기술 분야, GitHub 연결로 구성했습니다. 반응형 레이아웃과 키보드 탐색을 지원하며 외부 폰트·스크립트·이미지에 의존하지 않습니다.
+**이 주제를 고른 이유**
+
+- 실제로 쓸 수 있는 개인 포트폴리오(연구 경력, 프로젝트, 수상, 연락처)를 만들고 싶었습니다.
+- 정적 자기소개 페이지에서 끝내지 않고, 수업에서 배운 Object(ConfigMap, Secret, Probe, Service 로드밸런싱)가 **화면에서 눈으로 확인되도록** 설계했습니다.
+
+**주요 기능**
+
+| 기능 | 설명 | 사용한 OpenShift 기능 |
+|---|---|---|
+| 터미널 포트폴리오 | `about`, `research`, `experience`, `projects`, `skills`, `awards`, `contact` 명령. Tab 자동완성, ↑↓ 히스토리, 오타 추천(`did you mean`), 클릭 가능한 명령 버튼 | ConfigMap(`profile.json`) |
+| 일반 포트폴리오 화면 | 우측 상단 **Portfolio** 버튼 또는 `gui` 명령. 터미널이 익숙하지 않은 사람도 볼 수 있는 일반 이력 페이지. 모바일 대응 | ConfigMap |
+| Pod 정보 조회 | `neofetch`, `oc get pod`, `oc describe pod`, `hostname` → 지금 응답한 Pod 이름/namespace/노드/IP/리소스 제한 | Downward API |
+| 로드밸런싱 시각화 | `lb 10` → `/api/info`를 10번 호출해 어떤 Pod가 몇 번 응답했는지 막대그래프로 표시 | Deployment replicas 2, Service, Route(라운드로빈) |
+| 관리자 숨김 메시지 | `sudo cat .secret` → 비밀번호 입력 → 서버가 Secret 값과 비교 후 숨겨진 메시지 표시. 1분 5회 시도 제한 | Secret |
+| 헬스체크 | `/healthz`(Liveness), `/readyz`(Readiness: ConfigMap 파일이 마운트됐는지 확인) | Probe |
+| 테마 | `theme sim / paper / phosphor` (기본값은 ConfigMap의 `DEFAULT_THEME`) | ConfigMap → 환경변수 |
 
 ## 2. 아키텍처
 
 ```mermaid
 flowchart LR
-  U[브라우저] -->|HTTPS| R[OpenShift Route<br/>TLS edge 종료]
-  R --> S[Service<br/>port 8080]
-  S --> D[Deployment / Pod<br/>UBI9 Nginx 1.24]
-  C[ConfigMap<br/>index.html] -->|파일 마운트| D
-  P[Readiness / Liveness Probe] -->|GET / : 8080| D
+    U([사용자 브라우저]) -->|HTTPS| R[Route<br/>chaeeon-cv<br/>edge TLS · roundrobin]
+    R --> S[Service<br/>chaeeon-cv<br/>ClusterIP :8080]
+    S --> P1[Pod 1<br/>python server.py]
+    S --> P2[Pod 2<br/>python server.py]
+
+    subgraph D[Deployment chaeeon-cv · replicas 2]
+        P1
+        P2
+    end
+
+    CA[(ConfigMap<br/>chaeeon-cv-app<br/>server.py · index.html)] -. volume .-> D
+    CP[(ConfigMap<br/>chaeeon-cv-profile<br/>profile.json · 설정값)] -. volume / env .-> D
+    SE[(Secret<br/>chaeeon-cv-secret<br/>sudo 비밀번호)] -. env .-> D
+    DA[[Downward API<br/>Pod 이름 · 노드 · IP]] -. env .-> D
 ```
 
-| Object | 역할 |
-| --- | --- |
-| ConfigMap | 전체 HTML·CSS를 `index.html`로 보관합니다. |
-| Deployment | Nginx Pod 1개를 실행하고 ConfigMap 파일을 웹 루트에 마운트합니다. CPU·메모리 요청 및 상한을 지정합니다. |
-| Service | `app: chaeeon-portfolio` Pod를 8080 포트로 연결합니다. |
-| Route | OpenShift가 부여한 호스트명으로 HTTPS 접속을 제공합니다. 호스트명은 YAML에 고정하지 않았습니다. |
-| Readiness/Liveness Probe | `/`의 HTTP 응답으로 트래픽 수신 가능 여부와 프로세스 상태를 확인합니다. |
+**요청 흐름**: 사용자 → **Route**(HTTPS 종료, 라운드로빈) → **Service**(`app: chaeeon-cv` label로 Pod 선택) → **Pod**(Python 서버가 ConfigMap의 `index.html` 응답) → 브라우저의 JavaScript가 `/api/profile`, `/api/info`를 호출해 화면을 그림
 
-**사용 이미지:** `registry.access.redhat.com/ubi9/nginx-124:latest`  
-**애플리케이션 포트:** `8080/TCP`  
-**선택 이유:** Red Hat의 UBI9 Nginx 1.24 이미지는 비특권 실행을 지원하며 `/opt/app-root/src`의 정적 파일을 8080 포트로 제공합니다. Docker Hub 익명 다운로드 제한을 피할 수 있습니다. `latest` 태그는 재배포 시 갱신될 수 있으므로, 최종 Sandbox 실증 뒤 사용된 digest로 고정하면 재현성이 더 높아집니다.
+**사용한 Object와 역할**
 
-## 3. 저장소 구조
+| 파일 | Kind / 이름 | 역할 |
+|---|---|---|
+| `k8s/deployment.yaml` | Deployment `chaeeon-cv` | Pod 2개 실행. 이미지·명령·포트·환경변수·볼륨·리소스·Probe·보안 설정 정의. RollingUpdate(`maxUnavailable: 0`)로 업데이트 중에도 무중단 |
+| `k8s/service.yaml` | Service `chaeeon-cv` | `app: chaeeon-cv` label을 가진 Pod들에 8080 포트로 트래픽 분산 |
+| `k8s/route.yaml` | Route `chaeeon-cv` | 외부 HTTPS 주소 제공(host 자동 생성). sticky 쿠키를 끄고 roundrobin으로 설정해 요청마다 다른 Pod가 응답하도록 함 |
+| `k8s/configmap-app.yaml` | ConfigMap `chaeeon-cv-app` | 애플리케이션 코드(`server.py`, `index.html`)를 `/opt/app-root/app`에 마운트 → **이미지 빌드 없이** 공개 이미지에 코드 주입 |
+| `k8s/configmap-profile.yaml` | ConfigMap `chaeeon-cv-profile` | 포트폴리오 내용(`profile.json`)을 파일로, 화면 설정(`WELCOME_MESSAGE`, `DEFAULT_THEME`)을 환경변수로 주입. 내용과 코드를 분리 |
+| `k8s/secret.yaml` | Secret `chaeeon-cv-secret` | `sudo` 비밀번호와 숨김 메시지를 환경변수로 주입 |
+| (deployment 내부) | Downward API | `POD_NAME`, `POD_NAMESPACE`, `NODE_NAME`, `POD_IP`, CPU/메모리 limit을 환경변수로 주입 |
+| (deployment 내부) | Readiness / Liveness Probe | `/readyz`가 실패하면 Service에서 제외, `/healthz`가 3번 연속 실패하면 컨테이너 재시작 |
+
+**설계 포인트**
+
+- **비루트·고포트**: OpenShift는 임의 UID로 실행하므로 UBI 이미지 + 8080 포트를 사용하고, `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]`, `seccompProfile: RuntimeDefault`로 restricted-v2 SCC에 맞췄습니다.
+- **재현성**: YAML에 `namespace`, Route `host`, `uid`, `status` 등 자동 생성 필드가 없어 어느 프로젝트에서든 `oc apply -f k8s/` 한 번으로 배포됩니다.
+- **ConfigMap 자동 반영**: `profile.json` 볼륨에 `subPath`를 쓰지 않아, ConfigMap을 수정하면 재배포 없이 약 1분 안에 화면에 반영됩니다. 서버가 요청마다 파일을 다시 읽기 때문입니다.
+- **보안**: 화면에 넣는 데이터는 모두 `textContent`로 렌더링(XSS 방지), 비밀번호는 `hmac.compare_digest`로 상수 시간 비교, `sudo`는 IP당 1분 5회로 제한합니다.
+
+## 3. 사용 이미지
+
+| 항목 | 내용 |
+|---|---|
+| 이미지 | `registry.access.redhat.com/ubi9/python-311:latest` |
+| 노출 포트 | `8080/TCP` (이름 `http`) |
+| 실행 명령 | `python3 -u /opt/app-root/app/server.py` (ConfigMap으로 주입된 코드) |
+
+**선택 이유**
+
+- Red Hat UBI 이미지라 OpenShift의 **임의 UID 비루트 실행**을 기본 지원합니다.
+- `registry.access.redhat.com`에서 받기 때문에 Docker Hub 다운로드 횟수 제한이 없습니다.
+- 서버를 **Python 표준 라이브러리만으로** 작성해 `pip install`이나 이미지 빌드가 필요 없습니다. 공개 이미지 + ConfigMap만으로 서비스가 완성됩니다.
+- 메모리 사용량이 작아(limit 128Mi) Sandbox 할당량 안에서 Pod 2개를 여유 있게 띄울 수 있습니다.
+
+## 4. 배포 방법
+
+```bash
+# 1) 로그인 (웹 콘솔 우측 상단 → Copy login command)
+oc login --token=<토큰> --server=<서버 주소>
+
+# 2) 이 폴더에서 배포
+cd students/2023XXXXXX
+oc apply -f k8s/
+
+# 3) 확인
+oc get pods -l app=chaeeon-cv        # 2개 모두 1/1 Running
+oc get endpoints chaeeon-cv          # Pod IP 2개가 연결돼 있어야 함
+oc get route chaeeon-cv -o jsonpath='https://{.spec.host}{"\n"}'
+```
+
+**접속 후 확인할 것**
+
+| 경로 / 명령 | 예상 결과 |
+|---|---|
+| `https://<host>/` | 부팅 메시지, `serving from chaeeon-cv-xxxx` 와 함께 터미널 화면 |
+| `https://<host>/#portfolio` | 일반 포트폴리오 페이지 |
+| 터미널에서 `lb 10` | 서로 다른 Pod 이름 2개가 나뉘어 응답 |
+| 터미널에서 `sudo cat .secret` → 비밀번호 `sim2real-2026` | 숨겨진 메시지 출력 (Secret 값) |
+| `curl https://<host>/healthz` | `{"status": "ok"}` |
+| `curl https://<host>/api/info` | 응답한 Pod의 이름·namespace·노드 JSON |
+
+**재현성 검증**
+
+```bash
+oc delete -f k8s/
+oc apply -f k8s/
+```
+
+**내용 수정하기**: `src/`의 파일을 고친 뒤 `python3 tools/gen_configmaps.py`로 ConfigMap YAML을 다시 만들고 `oc apply -f k8s/` 합니다.
+
+- `profile.json`만 바꾼 경우 자동으로 반영됩니다.
+- 코드나 환경변수를 바꾼 경우 `oc rollout restart deployment/chaeeon-cv`가 필요합니다.
+
+## 5. 배포 결과
+
+<!-- TODO: 본인 Sandbox에서 캡처 후 아래 파일명으로 images/ 에 저장하세요 -->
+
+**`oc get all -l app=chaeeon-cv`**
 
 ```text
-students/202355561/
-├── README.md
-├── k8s/
-│   ├── configmap.yaml      # 전체 웹페이지를 포함한 배포 필수 파일
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   └── route.yaml
-├── site/
-│   └── index.html          # 편집하기 쉬운 원본; 배포 시 필요 없음
-└── images/
-    └── README.md           # Sandbox 실증 후 캡처 저장 위치
+(여기에 실제 출력 붙여넣기)
 ```
 
-`site/index.html` 수정 후에는 같은 내용을 `k8s/configmap.yaml`의 `data.index.html`에 반영해야 합니다. 현재 두 파일은 일치합니다.
+**Topology 화면**
 
-## 4. 배포 및 확인
+![Topology](images/topology.png)
 
-OpenShift Developer Sandbox에서 **본인 프로젝트**를 선택하고, 웹 콘솔의 **Copy login command**로 `oc`에 로그인합니다. 저장소 루트에서 다음을 실행합니다.
+**브라우저 접속 화면 — 터미널 (`neofetch`, `lb 10` 실행 후)**
 
-```bash
-cd students/202355561
-oc apply -f k8s/
-oc rollout status deployment/chaeeon-portfolio --timeout=120s
-oc get pods,svc,route
-oc get endpoints chaeeon-portfolio
-oc get route chaeeon-portfolio -o jsonpath='{.spec.host}{"\n"}'
-```
+![터미널 화면](images/browser-terminal.png)
 
-마지막 명령으로 나온 호스트에 `https://`를 붙여 브라우저로 접속합니다. **“생각을 실험으로, 실험을 서비스로.”**라는 제목과 프로젝트 카드가 보이면 정상입니다. 터미널에서는 다음처럼 HTTP 응답을 확인할 수 있습니다.
+**브라우저 접속 화면 — 포트폴리오**
 
-```bash
-ROUTE_HOST=$(oc get route chaeeon-portfolio -o jsonpath='{.spec.host}')
-curl -fLsS "https://${ROUTE_HOST}/" | head
-```
+![포트폴리오 화면](images/browser-portfolio.png)
 
-### `k8s/`만으로 재현성 확인
+## 6. 어려웠던 점
 
-기존 리소스를 삭제하고 동일한 폴더만 다시 적용합니다. **실제 제출 전 본인 Sandbox에서 반드시 실행해야 합니다.**
+<!-- TODO: 실제로 겪은 오류가 있다면 아래 형식으로 추가하세요 -->
 
-```bash
-oc delete -f k8s/ --ignore-not-found
-oc apply -f k8s/
-oc rollout status deployment/chaeeon-portfolio --timeout=120s
-oc get pods,svc,route
-```
-
-ConfigMap을 수정한 뒤 이미 배포된 Pod에 반영할 때는 `oc rollout restart deployment/chaeeon-portfolio`를 실행합니다. `subPath`로 마운트한 파일은 실행 중인 Pod에 자동 갱신되지 않기 때문입니다.
-
-## 5. 배포 결과 및 증빙
-
-**현재 상태 (2026-10-27): GitHub `main`에 파일 Push 완료, Developer Sandbox 실제 배포는 미검증.** 이 작업 환경에는 `oc` 로그인 세션이 없어 Pod Running, Route 응답, 삭제 후 재배포 성공을 확인하지 못했습니다. 성공 화면이나 명령 출력을 임의로 만들지 않았습니다.
-
-배포 후 아래 자료를 `images/`에 추가하고 이 절의 미검증 문구를 실제 결과로 교체합니다.
-
-1. `oc get all` 또는 Topology 화면 캡처
-2. Route로 접속한 포트폴리오 화면 캡처
-3. 삭제 후 재배포한 `oc rollout status` 결과와 Route 주소
-
-## 6. 예상 문제와 확인 방법
-
-- `ImagePullBackOff`: 이미지 주소와 Sandbox의 외부 레지스트리 접근을 확인합니다.
-- `CrashLoopBackOff` 또는 권한 오류: `oc logs deployment/chaeeon-portfolio`를 확인합니다. 이 이미지는 비특권 실행을 지원하고 포트 8080을 사용하도록 선택했습니다.
-- Route에서 `Application is not available`: `oc get pods`, `oc get endpoints chaeeon-portfolio`, `oc describe route chaeeon-portfolio` 순서로 확인합니다. Service selector와 Pod label은 모두 `app: chaeeon-portfolio`입니다.
-- Pod가 `Pending`: 프로젝트 할당량을 확인합니다. 이 Pod의 요청량은 CPU `25m`, 메모리 `64Mi`입니다.
+| 문제 | 원인 | 해결 |
+|---|---|---|
+| `lb` 명령을 실행해도 항상 같은 Pod만 응답 | OpenShift Route는 기본적으로 쿠키 기반 sticky session을 사용 | Route에 `haproxy.router.openshift.io/disable_cookies: "true"`, `balance: roundrobin` 어노테이션 추가 |
+| ConfigMap을 수정해도 화면이 바뀌지 않을 수 있음 | `subPath`로 마운트하면 ConfigMap 변경이 Pod에 전파되지 않음 | 디렉터리 전체를 마운트하고, 서버가 요청마다 파일을 다시 읽도록 구현 |
+| 공개 이미지에 코드를 넣는 방법 | 과제 조건상 이미지를 직접 빌드하지 않음 | 표준 라이브러리만 쓰는 서버를 ConfigMap으로 마운트하고 `command`로 실행 |
+| `sudo` 시도 제한이 우회될 수 있음 | `X-Forwarded-For` 첫 값은 클라이언트가 위조 가능 | 라우터가 덧붙이는 마지막 값을 클라이언트 IP로 사용 |
 
 ## 7. AI·참고자료 활용 내역
 
-- **Codex:** 포트폴리오 HTML/CSS, ConfigMap 및 Deployment·Service·Route 초안 작성, 과제 지침과 YAML 구조 검토에 사용했습니다. 실제 Sandbox 검증을 대체하지 않습니다.
-- **과제 지침:** 「나만의 컨테이너 만들기」 PDF의 폴더 구조, 채점 기준, 재현성 확인 절차를 따랐습니다.
-- **Red Hat / Software Collections:** [UBI9 Nginx 1.24 이미지 정보](https://catalog.redhat.com/software/containers/ubi9/nginx-124/657b066b6c1bc124a1d7ff39), [컨테이너 사용법](https://github.com/sclorg/nginx-container/blob/master/1.24/README.md)을 참고했습니다.
-- **프로젝트 정보:** 이전에 정리한 본인 프로젝트 이력 및 각 카드에 연결한 공개 GitHub 저장소를 바탕으로 작성했습니다. 공개 링크가 확인되지 않은 위성영상 분석 프로젝트에는 링크를 넣지 않았습니다.
+| 도구 / 자료 | 용도 |
+|---|---|
+| Claude (Anthropic) | 주제 아이디어 정리, 터미널 웹 UI·Python 서버 코드 초안, Deployment/Service/Route/ConfigMap/Secret YAML 초안, README 초안 작성. 생성된 YAML은 본인 Developer Sandbox에 직접 배포해 동작을 확인함 |
+| [OpenShift Docs — Route configuration](https://docs.openshift.com/container-platform/latest/networking/routes/route-configuration.html) | Route 어노테이션(`disable_cookies`, `balance`), edge TLS 설정 |
+| [Kubernetes Docs — Downward API](https://kubernetes.io/docs/concepts/workloads/pods/downward-api/) | Pod 이름·노드·리소스 제한을 환경변수로 주입 |
+| [Kubernetes Docs — ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) | 볼륨 마운트 시 자동 업데이트(`subPath` 예외) |
+| [Kubernetes Docs — Liveness, Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) | Probe 설정 |
+| [Red Hat Ecosystem Catalog — UBI Python](https://catalog.redhat.com/en/software/containers/search?q=ubi9%20python) | 비루트 실행 이미지 선택 |
 
-## 제출 전 확인
+---
 
-- [x] 학번 폴더와 `k8s/` 구성
-- [x] Deployment·Service·Route·ConfigMap 및 Probe 작성
-- [x] YAML에 `namespace`, 고정 Route `host`, 클러스터 자동 생성 필드 없음
-- [ ] 본인 Sandbox에서 `oc apply -f k8s/` 성공 확인
-- [ ] Route HTTPS 접속과 Pod Running 확인
-- [ ] `oc delete -f k8s/` 후 재배포 확인
-- [ ] 실제 캡처를 `images/`에 추가하고 이 README의 배포 결과 갱신
-- [x] GitHub 저장소에 commit·push 완료 — 제출 URL: https://github.com/yeochaeeon/intelligent-IOT-platform
+### 폴더 구조
 
+```text
+students/2023XXXXXX/
+├── README.md
+├── k8s/                       ← 채점 대상 (oc apply -f k8s/)
+│   ├── configmap-app.yaml       코드 (server.py, index.html)
+│   ├── configmap-profile.yaml   포트폴리오 내용 + 화면 설정
+│   ├── secret.yaml              sudo 비밀번호
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── route.yaml
+├── src/                       ← ConfigMap 원본 소스 (편집용)
+│   ├── server.py
+│   ├── index.html
+│   └── profile.json
+├── tools/gen_configmaps.py    ← src/ → k8s/configmap-*.yaml 생성
+└── images/                    ← 배포 결과 캡처
+```
+
+> `secret.yaml`의 비밀번호는 채점 재현을 위한 **데모 값**입니다. 실제 서비스라면 Secret을 Git에 올리지 않고 Sealed Secrets 등을 사용합니다.

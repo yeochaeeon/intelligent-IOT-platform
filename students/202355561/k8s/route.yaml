@@ -1,16 +1,24 @@
+# 외부 HTTPS 접속 주소 (host 는 비워 두면 OpenShift 가 자동 생성)
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: chaeeon-portfolio
+  name: chaeeon-cv
   labels:
-    app: chaeeon-portfolio
+    app: chaeeon-cv
+    app.kubernetes.io/name: chaeeon-cv
+    app.kubernetes.io/part-of: chaeeon-portfolio
+  annotations:
+    # 기본 sticky-session 쿠키를 끄고 라운드로빈 → 요청마다 다른 Pod 가 응답하는 것을 확인 가능
+    haproxy.router.openshift.io/disable_cookies: "true"
+    haproxy.router.openshift.io/balance: roundrobin
 spec:
   to:
     kind: Service
-    name: chaeeon-portfolio
+    name: chaeeon-cv
     weight: 100
   port:
     targetPort: http
   tls:
-    termination: edge
-    insecureEdgeTerminationPolicy: Redirect
+    termination: edge                       # 라우터에서 TLS 종료 (https)
+    insecureEdgeTerminationPolicy: Redirect # http 로 오면 https 로 리다이렉트
+  wildcardPolicy: None

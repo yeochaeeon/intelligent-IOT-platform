@@ -1,56 +1,147 @@
+# 포트폴리오 웹 서버 Deployment
+#  - 공개 UBI Python 이미지에 ConfigMap 으로 코드를 주입 (별도 이미지 빌드 없음)
+#  - replicas 2 → Route/Service 로드밸런싱을 'lb' 명령으로 확인 가능
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chaeeon-portfolio
+  name: chaeeon-cv
   labels:
-    app: chaeeon-portfolio
+    app: chaeeon-cv
+    app.kubernetes.io/name: chaeeon-cv
+    app.kubernetes.io/part-of: chaeeon-portfolio
+    app.kubernetes.io/component: web
+    app.openshift.io/runtime: python          # Topology 화면에 Python 아이콘 표시
 spec:
-  replicas: 1
-  revisionHistoryLimit: 2
+  replicas: 2
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0                        # 업데이트 중에도 항상 응답 가능
+      maxSurge: 1
   selector:
     matchLabels:
-      app: chaeeon-portfolio
+      app: chaeeon-cv                          # Service selector 와 동일해야 함
   template:
     metadata:
       labels:
-        app: chaeeon-portfolio
+        app: chaeeon-cv
+        app.kubernetes.io/name: chaeeon-cv
+        app.kubernetes.io/part-of: chaeeon-portfolio
     spec:
       containers:
         - name: web
-          image: registry.access.redhat.com/ubi9/nginx-124:latest
+          image: registry.access.redhat.com/ubi9/python-311:latest
           imagePullPolicy: IfNotPresent
+          command: ["python3", "-u", "/opt/app-root/app/server.py"]
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 8080              # 비루트 사용자도 쓸 수 있는 1024 이상 포트
               protocol: TCP
+          env:
+            - name: PORT
+              value: "8080"
+            - name: APP_DIR
+              value: /opt/app-root/app
+            - name: PROFILE_DIR
+              value: /opt/app-root/profile
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+            # ── Downward API: Pod 자신의 정보를 환경변수로 주입 ──
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CPU_LIMIT
+              valueFrom:
+                resourceFieldRef:
+                  containerName: web
+                  resource: limits.cpu
+                  divisor: 1m
+            - name: MEMORY_LIMIT
+              valueFrom:
+                resourceFieldRef:
+                  containerName: web
+                  resource: limits.memory
+                  divisor: 1Mi
+            # ── ConfigMap: 화면 설정 ──
+            - name: WELCOME_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: chaeeon-cv-profile
+                  key: WELCOME_MESSAGE
+            - name: DEFAULT_THEME
+              valueFrom:
+                configMapKeyRef:
+                  name: chaeeon-cv-profile
+                  key: DEFAULT_THEME
+            # ── Secret: sudo 비밀번호/메시지 ──
+            - name: SUDO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chaeeon-cv-secret
+                  key: SUDO_PASSWORD
+            - name: SUDO_MESSAGE
+              valueFrom:
+                secretKeyRef:
+                  name: chaeeon-cv-secret
+                  key: SUDO_MESSAGE
+          volumeMounts:
+            - name: app-code
+              mountPath: /opt/app-root/app
+              readOnly: true
+            - name: profile
+              mountPath: /opt/app-root/profile   # subPath 를 쓰지 않아 ConfigMap 변경이 자동 반영됨
+              readOnly: true
           resources:
             requests:
-              cpu: 25m
-              memory: 64Mi
+              cpu: 20m
+              memory: 48Mi
             limits:
-              cpu: 250m
-              memory: 192Mi
-          readinessProbe:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:                        # 준비 전에는 Service 트래픽에서 제외
             httpGet:
-              path: /
+              path: /readyz
               port: http
             initialDelaySeconds: 3
-            periodSeconds: 10
+            periodSeconds: 5
             timeoutSeconds: 2
-          livenessProbe:
+            failureThreshold: 3
+          livenessProbe:                         # 응답이 없으면 컨테이너 재시작
             httpGet:
-              path: /
+              path: /healthz
               port: http
-            initialDelaySeconds: 15
-            periodSeconds: 20
+            initialDelaySeconds: 10
+            periodSeconds: 15
             timeoutSeconds: 2
-          volumeMounts:
-            - name: site-content
-              mountPath: /opt/app-root/src/index.html
-              subPath: index.html
-              readOnly: true
+            failureThreshold: 3
+          securityContext:                       # OpenShift restricted-v2 SCC 와 호환
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
       volumes:
-        - name: site-content
+        - name: app-code
           configMap:
-            name: chaeeon-portfolio-content
-            defaultMode: 0444
+            name: chaeeon-cv-app
+        - name: profile
+          configMap:
+            name: chaeeon-cv-profile
+            items:
+              - key: profile.json
+                path: profile.json
