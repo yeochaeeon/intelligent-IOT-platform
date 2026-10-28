@@ -417,6 +417,29 @@ data:
     @media (max-width: 820px) { .hero-panel, .project-grid, .research-grid, .skills-grid, .simple-grid { grid-template-columns: 1fr; } .hero-visual { min-height: 245px; } .gui-inner { padding: 20px 18px 60px; } .portfolio-nav { gap: 1px; } .portfolio-nav a { font-size: 11px; padding: 4px 7px; } }
     @media (max-width: 620px) { .mascot-note { display: none; } .mascot { width: 42px; height: 46px; } .mascot-face { left: 6px; top: 13px; } .mascot::before { left: 17px; } .mascot::after { left: 15px; } }
     @media (prefers-reduced-motion: reduce) { .mascot { animation: none; } .gui { scroll-behavior: auto; } }
+
+    /* SO-101 research spotlight */
+    .spotlight { border: 1px solid var(--line); border-radius: 22px; overflow: hidden; background: var(--surface); }
+    .spotlight-head { padding: clamp(22px, 3vw, 38px); background: linear-gradient(120deg, color-mix(in srgb, var(--z) 15%, var(--surface)), var(--surface)); border-bottom: 1px solid var(--line); }
+    .spotlight-head h3 { font-size: clamp(22px, 2.8vw, 32px); letter-spacing: -.03em; margin: 8px 0 14px; }
+    .spotlight-head p { max-width: 68ch; margin: 0; }
+    .spotlight .setup { margin-top: 12px; color: var(--muted); font-size: 15px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); border-bottom: 1px solid var(--line); }
+    .metric { padding: 20px; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric strong { display: block; color: var(--pod); font: 600 clamp(23px, 2.8vw, 34px) "IBM Plex Mono", monospace; line-height: 1.2; }
+    .metric strong small { font-size: 14px; margin-left: 3px; }
+    .metric span { display: block; margin-top: 9px; color: var(--muted); font-size: 13px; }
+    .spotlight-body { padding: clamp(20px, 3vw, 34px); }
+    .spotlight-body h4 { margin: 0 0 18px; font-size: 17px; }
+    .method-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    .method-step { border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+    .method-step b { color: var(--z); font: 500 13px "IBM Plex Mono", monospace; }
+    .method-step p { margin: 7px 0 0; font-size: 14px; color: var(--text); }
+    .research-note { margin: 20px 0 0; padding: 14px 16px; border-left: 3px solid var(--y); background: color-mix(in srgb, var(--y) 8%, var(--surface)); font-size: 14px; }
+    .research-note strong { color: var(--y); }
+    .spotlight-source { display: block; margin-top: 14px; color: var(--muted); font: 12px "IBM Plex Mono", monospace; }
+    @media (max-width: 820px) { .metric-grid { grid-template-columns: repeat(2,1fr); } .metric:nth-child(2) { border-right: 0; } .metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); } .method-grid { grid-template-columns: 1fr; } }
     </style>
     </head>
     <body>
@@ -908,7 +931,7 @@ data:
       const g = $("guiInner");
       const tagRow = (tags) => h("div", { class: "tags" }, ...tags.map(t => h("span", {}, t)));
       const nav = h("nav", { class: "portfolio-nav", "aria-label": "포트폴리오 목차" },
-        ...[["research", "Research"], ["experience", "Experience"], ["projects", "Projects"], ["skills", "Skills"], ["awards", "Awards"], ["education", "Education"]].map(([id, label]) => h("a", { href: `#${id}`, onclick: (e) => { e.preventDefault(); $(id)?.scrollIntoView({ behavior: reduced ? "instant" : "smooth" }); } }, label)));
+        ...[["research", "Research"], ["spotlight", "SO-101"], ["experience", "Experience"], ["projects", "Projects"], ["skills", "Skills"], ["awards", "Awards"], ["education", "Education"]].map(([id, label]) => h("a", { href: `#${id}`, onclick: (e) => { e.preventDefault(); $(id)?.scrollIntoView({ behavior: reduced ? "instant" : "smooth" }); } }, label)));
       const section = (id, num, title, intro, content) => h("section", { id },
         h("div", { class: "section-kicker" }, num), h("h2", {}, title),
         h("p", { class: "section-intro" }, intro), content);
@@ -931,21 +954,33 @@ data:
             h("div", { class: "mascot-wrap" }, note, bot))),
         section("research", "01 / FOCUS", "무엇을 연구하나요?", "로봇이 시뮬레이션에서 배운 동작을 실제 환경에서도 안정적으로 수행하도록 연구합니다.",
           h("div", { class: "research-grid" }, ...P.interests.map((t, i) => h("div", { class: "research-card" }, h("span", { class: "research-icon", "aria-hidden": "true" }, String(i + 1).padStart(2,"0")), h("p", {}, t))))),
-        section("experience", "02 / EXPERIENCE", "연구와 경험", "실험 환경 구축부터 실제 로봇 적용, 실패 분석과 데이터 수집까지 이어지는 경험입니다.",
+        section("spotlight", "02 / RESEARCH CASE", "SO-101 연구 노트", "실물 로봇에서 무엇을 시험했고, 어디서 한계를 발견했는지 정리했습니다.",
+          h("article", { class: "spotlight" },
+            h("div", { class: "spotlight-head" }, h("div", { class: "section-kicker" }, "PICK & PLACE / PICK & STACK"),
+              h("h3", {}, P.researchSpotlight.title), h("p", {}, P.researchSpotlight.summary), h("p", { class: "setup" }, P.researchSpotlight.setup)),
+            h("div", { class: "metric-grid" }, ...P.researchSpotlight.metrics.map(m => h("div", { class: "metric" },
+              h("strong", {}, m.value, h("small", {}, m.unit)), h("span", {}, m.label)))),
+            h("div", { class: "spotlight-body" }, h("h4", {}, "실험 흐름"),
+              h("div", { class: "method-grid" }, ...P.researchSpotlight.methodSteps.map(step => h("div", { class: "method-step" },
+                h("b", {}, step.label), h("p", {}, step.text)))),
+              h("p", { class: "research-note" }, h("strong", {}, "결과 · "), P.researchSpotlight.evaluation),
+              h("p", { class: "research-note" }, h("strong", {}, "한계 · "), P.researchSpotlight.limitation),
+              h("small", { class: "spotlight-source" }, P.researchSpotlight.source)))),
+        section("experience", "03 / EXPERIENCE", "연구와 경험", "실험 환경 구축부터 실제 로봇 적용, 실패 분석과 데이터 수집까지 이어지는 경험입니다.",
           h("div", { class: "experience-list" }, ...P.experience.map(e => h("article", { class: "experience-card" },
             h("h3", {}, e.role), h("div", { class: "meta" }, `${e.org} · ${e.period}`),
             h("ul", {}, ...e.points.map(p => h("li", {}, p))), tagRow(e.tags))))),
-        section("projects", "03 / SELECTED WORK", "프로젝트", "만든 것과 맡은 역할을 간단히 살펴볼 수 있습니다.",
+        section("projects", "04 / SELECTED WORK", "프로젝트", "만든 것과 맡은 역할을 간단히 살펴볼 수 있습니다.",
           h("div", { class: "project-grid" }, ...P.projects.map((p, i) => h("article", { class: "project-card" },
             h("div", { class: "project-art", "aria-hidden": "true" }, h("strong", {}, String(i + 1).padStart(2, "0")), h("span", {}, p.tags.slice(0, 2).join(" / "))),
             h("div", { class: "project-content" }, h("h3", {}, p.name), h("div", { class: "meta" }, `${p.role} · ${p.period}`),
               h("p", {}, p.summary), h("ul", {}, ...p.points.map(x => h("li", {}, x))),
               p.link ? link(p.link, "프로젝트 코드 보기 ↗") : null, tagRow(p.tags)))))),
-        section("skills", "04 / TOOLBOX", "기술 스택", "연구와 제품 개발에서 사용한 언어와 도구입니다.",
+        section("skills", "05 / TOOLBOX", "기술 스택", "연구와 제품 개발에서 사용한 언어와 도구입니다.",
           h("div", { class: "skills-grid" }, ...Object.entries(P.skills).map(([k, v]) => h("div", { class: "skills-card" }, h("h3", {}, k), tagRow(v))))),
-        section("awards", "05 / RECOGNITION", "수상과 장학", "프로젝트와 학업에서 얻은 결과입니다.",
+        section("awards", "06 / RECOGNITION", "수상과 장학", "프로젝트와 학업에서 얻은 결과입니다.",
           h("div", { class: "simple-grid" }, ...P.awards.map(a => h("div", { class: "simple-card" }, h("h3", {}, a.title), h("p", { class: "meta" }, `${a.org} · ${a.year}`))))),
-        section("education", "06 / BACKGROUND", "교육과 활동", "학업과 커뮤니티 활동입니다.",
+        section("education", "07 / BACKGROUND", "교육과 활동", "학업과 커뮤니티 활동입니다.",
           h("div", { class: "simple-grid" }, ...P.education.map(e => h("div", { class: "simple-card" }, h("h3", {}, e.school), h("p", { class: "meta" }, `${e.degree} · ${e.period} · ${e.note}`))), ...P.activities.map(a => h("div", { class: "simple-card" }, h("p", {}, a))))),
         runtimeBox()
       );

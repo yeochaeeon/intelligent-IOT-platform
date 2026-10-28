@@ -3,8 +3,8 @@
   "nameKo": "여채언",
   "handle": "chaeeon",
   "headline": "Robot Learning · Reinforcement Learning · Computer Vision",
-  "tagline": "Teaching robots to grasp the real world — from simulation to reality.",
-  "taglineKo": "시뮬레이션에서 배운 로봇이 현실에서도 잘 잡도록 연구합니다.",
+  "tagline": "From robot demonstrations to reliable recovery.",
+  "taglineKo": "로봇의 실패를 분석하고, 다시 잡는 방법을 연구합니다.",
   "location": "Busan, South Korea",
   "contact": {
     "email": "codjs2659@gmail.com",
@@ -19,7 +19,13 @@
       "note": "Cumulative GPA 3.97 / 4.5"
     }
   ],
-  "expertise": ["Robot Learning", "Reinforcement Learning", "Computer Vision", "Deep Learning", "Sim2Real Transfer"],
+  "expertise": [
+    "Robot Learning",
+    "Reinforcement Learning",
+    "Computer Vision",
+    "Deep Learning",
+    "Sim2Real Transfer"
+  ],
   "interests": [
     "Reinforcement Learning for Robotic Manipulation",
     "Vision-based Robot Control and Imitation Learning",
@@ -40,7 +46,16 @@
         "Built HIL/DAgger-style recovery-data collection and fine-tuning pipelines to cover failure states missing from the original demos.",
         "Designed residual RL in MuJoCo: a pretrained ACT policy as base controller plus an RL policy learning bounded corrections (a_t = a_t^base + Δa_t^RL), with staged dense rewards and geometry-based target inference."
       ],
-      "tags": ["Isaac Lab", "MuJoCo", "LeRobot", "PPO/SAC", "ACT", "Diffusion Policy", "SmolVLA", "ROS"]
+      "tags": [
+        "Isaac Lab",
+        "MuJoCo",
+        "LeRobot",
+        "PPO/SAC",
+        "ACT",
+        "Diffusion Policy",
+        "SmolVLA",
+        "ROS"
+      ]
     },
     {
       "id": "datacamp",
@@ -53,7 +68,12 @@
         "Chimney height estimation combining YOLO detections + keypoints with a ResNet50 regressor (ROI Align + global features) — validation RMSE 8.8 m.",
         "Multispectral industrial-complex segmentation (RGB, NIR, NDVI, NDWI) with a ResNet50 U-Net++."
       ],
-      "tags": ["YOLO", "ResNet50", "U-Net++", "Satellite Imagery"]
+      "tags": [
+        "YOLO",
+        "ResNet50",
+        "U-Net++",
+        "Satellite Imagery"
+      ]
     }
   ],
   "projects": [
@@ -67,7 +87,11 @@
         "Built Android features with Kotlin and Jetpack Compose; the cross-platform app reached No. 141 in the App Store Lifestyle category.",
         "Selected for a national startup-support idea program (Ministry of SMEs and Startups) and advanced past the first round (May 2026)."
       ],
-      "tags": ["Kotlin", "Jetpack Compose", "Startup"],
+      "tags": [
+        "Kotlin",
+        "Jetpack Compose",
+        "Startup"
+      ],
       "link": "https://github.com/ApptiveDev/KillingPoint-FE"
     },
     {
@@ -81,7 +105,11 @@
         "Ultrasonic-based navigation that avoids nearby obstacles while moving autonomously.",
         "Moisture-sensor dismissal: spray water on the device to turn the alarm off."
       ],
-      "tags": ["STM32", "C", "Embedded"]
+      "tags": [
+        "STM32",
+        "C",
+        "Embedded"
+      ]
     },
     {
       "id": "hankyul",
@@ -92,7 +120,11 @@
       "points": [
         "Memory-training and daily-assistance features with speech-to-text, a maps API, and an on-device TensorFlow Lite Korean emotion classifier."
       ],
-      "tags": ["Android", "TFLite", "STT"],
+      "tags": [
+        "Android",
+        "TFLite",
+        "STT"
+      ],
       "link": "https://github.com/2025AndroidTermProject/Hangyul"
     },
     {
@@ -104,7 +136,11 @@
       "points": [
         "Designed AI-based feedback and analytics features for student career readiness."
       ],
-      "tags": ["Hackathon", "AI", "Frontend"]
+      "tags": [
+        "Hackathon",
+        "AI",
+        "Frontend"
+      ]
     },
     {
       "id": "pnubuddy",
@@ -115,24 +151,117 @@
       "points": [
         "Implemented the UI and service flow for fraud prevention and product recommendation."
       ],
-      "tags": ["Hackathon", "Frontend"]
+      "tags": [
+        "Hackathon",
+        "Frontend"
+      ]
     }
   ],
   "skills": {
-    "Programming": ["Python", "C", "C++", "Kotlin", "JavaScript/Node.js"],
-    "ML & Robotics": ["PyTorch", "LeRobot", "NVIDIA Isaac Sim/Isaac Lab", "MuJoCo", "YOLO", "ResNet", "U-Net++", "TensorFlow Lite"],
-    "Systems & Dev": ["Linux", "Docker", "AWS", "Git", "MySQL", "Jetpack Compose", "Firebase", "OpenShift"],
-    "Language": ["TOEIC 815"]
+    "Programming": [
+      "Python",
+      "C",
+      "C++",
+      "Kotlin",
+      "JavaScript/Node.js"
+    ],
+    "ML & Robotics": [
+      "PyTorch",
+      "LeRobot",
+      "NVIDIA Isaac Sim/Isaac Lab",
+      "MuJoCo",
+      "YOLO",
+      "ResNet",
+      "U-Net++",
+      "TensorFlow Lite"
+    ],
+    "Systems & Dev": [
+      "Linux",
+      "Docker",
+      "AWS",
+      "Git",
+      "MySQL",
+      "Jetpack Compose",
+      "Firebase",
+      "OpenShift"
+    ],
+    "Language": [
+      "TOEIC 815"
+    ]
   },
   "awards": [
-    { "title": "Academic Excellence Scholarship", "org": "Pusan National University", "year": "Fall 2024, Fall 2025, Spring 2026, Fall 2026" },
-    { "title": "Third Place, 6th PNU Creative Convergence SW Hackathon", "org": "Pusan National University", "year": "2025" },
-    { "title": "Third Place, 5th PNU Creative Convergence SW Hackathon", "org": "Pusan National University", "year": "2024" },
-    { "title": "Grand Prize, SW Innovation Startup Hackathon", "org": "Pusan National University", "year": "2023" }
+    {
+      "title": "Academic Excellence Scholarship",
+      "org": "Pusan National University",
+      "year": "Fall 2024, Fall 2025, Spring 2026, Fall 2026"
+    },
+    {
+      "title": "Third Place, 6th PNU Creative Convergence SW Hackathon",
+      "org": "Pusan National University",
+      "year": "2025"
+    },
+    {
+      "title": "Third Place, 5th PNU Creative Convergence SW Hackathon",
+      "org": "Pusan National University",
+      "year": "2024"
+    },
+    {
+      "title": "Grand Prize, SW Innovation Startup Hackathon",
+      "org": "Pusan National University",
+      "year": "2023"
+    }
   ],
   "activities": [
     "Academic clubs: APPTIVE (IT entrepreneurship), AID (AI Development), KEEPER (information security) — Mar. 2023 – Aug. 2026",
     "Member, School of Computer Science and Engineering Student Council — Jan. 2024 – Dec. 2024"
   ],
-  "updated": "2026-10"
+  "updated": "2026-10",
+  "researchSpotlight": {
+    "title": "LeRobot SO-101 · 실물과 시뮬레이션을 잇는 로봇 조작",
+    "summary": "5개의 블록을 옮기거나 쌓는 과제에서 실물 시연과 MuJoCo 시뮬레이션 데이터를 결합해 ACT 정책을 학습했습니다.",
+    "setup": "상단·손목 카메라 영상과 6차원 관절 상태를 입력으로 사용하고, 5개 관절과 그리퍼의 동작을 예측합니다.",
+    "metrics": [
+      {
+        "value": "200",
+        "unit": "개",
+        "label": "실물 원격 조종 시연"
+      },
+      {
+        "value": "3,200",
+        "unit": "개",
+        "label": "MuJoCo 자동 생성 시연"
+      },
+      {
+        "value": "4.95 / 5",
+        "unit": "개",
+        "label": "블록 옮기기 평균"
+      },
+      {
+        "value": "4.6 / 5",
+        "unit": "개",
+        "label": "블록 쌓기 평균"
+      }
+    ],
+    "evaluation": "ACT 최종 모델의 실물 평가: 과제별 20회, 회당 제한시간 5분. 평균 수행 시간은 옮기기 34.3초, 쌓기 58.5초였습니다.",
+    "methodSteps": [
+      {
+        "label": "01 · 시연 수집",
+        "text": "Leader–Follower 원격 조종으로 실물 시연을 기록하고, MuJoCo에서는 IK 스크립트와 환경 랜덤화로 다양한 배치를 생성했습니다."
+      },
+      {
+        "label": "02 · ACT 학습",
+        "text": "상단·손목 카메라와 관절 상태를 입력으로 받아 여러 스텝의 관절 동작을 한 번에 예측했습니다."
+      },
+      {
+        "label": "03 · 실패 분석",
+        "text": "파지 중심이 어긋나거나 그리퍼 각도가 틀어지는 문제를 실물 Rollout에서 관찰했습니다."
+      },
+      {
+        "label": "04 · 잔차 정책",
+        "text": "기본 ACT 궤적은 유지하고 파지 직전 약 30 tick에서만 작은 관절 보정값을 학습했습니다."
+      }
+    ],
+    "limitation": "잔차 강화학습 실험에서 블록 배치 성공 수의 유의미한 개선은 확인되지 않았습니다. 파지 구간으로 학습 범위를 좁혀 긴 에피소드의 보상 할당 문제를 완화하는 방향을 검토했습니다.",
+    "source": "LeRobot SO-101 Lab Seminar · 실험 및 발표 자료"
+  }
 }
