@@ -141,7 +141,9 @@ data:
             "Kotlin과 Jetpack Compose로 안드로이드 기능을 개발했습니다. 크로스플랫폼 앱은 App Store 라이프스타일 부문 141위를 기록했습니다.",
             "중소벤처기업부 창업지원 아이디어 프로그램에 선정되어 1차 심사를 통과했습니다(2026년 5월)."
           ],
-          "image": "/assets/killingpart.jpg"
+          "image": "/assets/killingpart.jpg",
+          "imageAltKo": "킬링파트 제공 이미지",
+          "imageAltEn": "Killing Part supplied image"
         },
         {
           "id": "alarmclock",
@@ -168,7 +170,9 @@ data:
             "초음파 센서로 주변 장애물을 피하며 자율적으로 이동하도록 구현했습니다.",
             "수분 센서를 이용해 장치에 물을 뿌리면 알람이 꺼지도록 했습니다."
           ],
-          "image": "/assets/alarmclock.svg"
+          "image": "/assets/alarmclock.jpg",
+          "imageAltKo": "STM32 개발 보드 콘셉트 사진",
+          "imageAltEn": "Concept photo of an STM32 development board"
         },
         {
           "id": "hankyul",
@@ -192,7 +196,9 @@ data:
           "pointsKo": [
             "음성 인식, 지도 API, 기기 내 TensorFlow Lite 한국어 감정 분류 모델을 활용한 기능을 구현했습니다."
           ],
-          "image": "/assets/hankyul.svg"
+          "image": "/assets/compose.svg",
+          "imageAltKo": "Jetpack Compose UI 일러스트",
+          "imageAltEn": "Jetpack Compose UI illustration"
         },
         {
           "id": "jobmate",
@@ -214,8 +220,7 @@ data:
           "summaryKo": "취업 준비 플랫폼 · 제6회 부산대학교 창의융합 SW 해커톤 장려상.",
           "pointsKo": [
             "학생의 취업 준비를 돕는 AI 기반 피드백 및 분석 기능을 설계했습니다."
-          ],
-          "image": "/assets/jobmate.svg"
+          ]
         },
         {
           "id": "pnubuddy",
@@ -236,8 +241,7 @@ data:
           "summaryKo": "교내 중고거래 안전 플랫폼 · 제5회 부산대학교 창의융합 SW 해커톤 장려상.",
           "pointsKo": [
             "사기 예방과 상품 추천을 위한 화면과 서비스 흐름을 구현했습니다."
-          ],
-          "image": "/assets/pnubuddy.svg"
+          ]
         }
       ],
       "skills": {

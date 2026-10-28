@@ -121,10 +121,8 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/assets/"):
             name = path.removeprefix("/assets/")
             assets = {"killingpart.jpg": ("killingpart.jpg.b64", "image/jpeg"),
-                      "alarmclock.svg": ("alarmclock.svg", "image/svg+xml"),
-                      "hankyul.svg": ("hankyul.svg", "image/svg+xml"),
-                      "jobmate.svg": ("jobmate.svg", "image/svg+xml"),
-                      "pnubuddy.svg": ("pnubuddy.svg", "image/svg+xml")}
+                      "alarmclock.jpg": ("alarmclock.jpg.b64", "image/jpeg"),
+                      "compose.svg": ("compose.svg", "image/svg+xml")}
             if name not in assets:
                 return self._json(404, {"error": "asset not found"})
             filename, ctype = assets[name]

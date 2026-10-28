@@ -4,7 +4,7 @@
 
 ## 1. 컨테이너 소개
 
-**chaeeon-cv**는 명령어로 이력과 프로젝트를 탐색하는 포트폴리오 웹 서비스입니다. 일반 포트폴리오 화면은 KOR/ENG 언어 전환과 프로젝트별 이미지도 제공합니다. 자기소개 페이지에 OpenShift의 Pod 정보, ConfigMap, Secret, 상태 검사, 복제본 구성을 연결해 수업에서 배운 Object의 역할을 직접 확인할 수 있도록 구성했습니다.
+**chaeeon-cv**는 명령어로 이력과 프로젝트를 탐색하는 포트폴리오 웹 서비스입니다. 일반 포트폴리오 화면은 KOR/ENG 언어 전환과 프로젝트별 이미지 또는 기본 카드 화면도 제공합니다. 자기소개 페이지에 OpenShift의 Pod 정보, ConfigMap, Secret, 상태 검사, 복제본 구성을 연결해 수업에서 배운 Object의 역할을 직접 확인할 수 있도록 구성했습니다.
 
 | 기능 | 사용 방법 | 구현 요소 |
 |---|---|---|
@@ -44,7 +44,7 @@ flowchart LR
 | `k8s/deployment.yaml` | Deployment `chaeeon-cv` | Pod 2개, 이미지, 실행 명령, 리소스, 볼륨, 환경변수, Probe를 정의합니다. RollingUpdate는 `maxUnavailable: 0`, `maxSurge: 1`입니다. |
 | `k8s/service.yaml` | Service `chaeeon-cv` | `app: chaeeon-cv` Pod를 선택하고 8080/TCP를 컨테이너의 `http` 포트에 연결합니다. |
 | `k8s/route.yaml` | Route `chaeeon-cv` | 외부 접속 주소를 제공하고 edge TLS 및 HTTP→HTTPS 리다이렉트를 설정합니다. |
-| `k8s/configmap-app.yaml` | ConfigMap `chaeeon-cv-app` | `server.py`, `index.html`, 프로젝트 이미지 5장을 `/opt/app-root/app`에 읽기 전용 마운트합니다. |
+| `k8s/configmap-app.yaml` | ConfigMap `chaeeon-cv-app` | `server.py`, `index.html`, 프로젝트 이미지 3장을 `/opt/app-root/app`에 읽기 전용 마운트합니다. |
 | `k8s/configmap-profile.yaml` | ConfigMap `chaeeon-cv-profile` | `profile.json`을 파일로 마운트하고 환영 문구와 기본 테마를 환경변수로 제공합니다. |
 | `k8s/secret.yaml` | Secret `chaeeon-cv-secret` | 데모용 `sudo` 인증값과 메시지를 환경변수로 제공합니다. |
 | `k8s/deployment.yaml` | Downward API | Pod 이름·namespace·노드·IP와 리소스 제한을 서버에 전달합니다. |
@@ -124,7 +124,7 @@ Route의 `/`, `/healthz`, `/readyz`는 각각 **HTTP 200**을 반환했습니다
 | 도구·자료 | 활용 내용 |
 |---|---|
 | Claude (Anthropic) | 주제 아이디어, 터미널 UI·Python 서버, OpenShift YAML과 README의 초안 작성에 활용했습니다. |
-| Codex | 과제 기준에 맞춰 README 구성과 배포 증빙 설명을 정리하는 데 활용했습니다. |
+| Codex | README 구성과 배포 증빙 설명, 포트폴리오의 KOR/ENG 화면 및 카드 이미지 구현에 활용했습니다. STM32 보드 이미지는 AI로 생성한 콘셉트 사진이며 실제 제작물 사진이 아닙니다. |
 | [Kubernetes ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) | 설정과 파일의 Pod 주입 방식 참고 |
 | [Kubernetes Downward API](https://kubernetes.io/docs/concepts/workloads/pods/downward-api/) | Pod 메타데이터와 리소스 정보 주입 방식 참고 |
 | [Kubernetes Probes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/) | Readiness·Liveness Probe 설정 참고 |
@@ -146,7 +146,7 @@ students/202355561/
 │   ├── index.html
 │   ├── profile.json
 │   ├── server.py
-│   └── assets/             # 킬링파트 제공 이미지와 4개 프로젝트 일러스트
+│   └── assets/             # 킬링파트 제공 이미지, STM32 보드 콘셉트 사진, Compose 일러스트
 ├── tools/gen_configmaps.py
 └── images/
     ├── 01-resource-status.png

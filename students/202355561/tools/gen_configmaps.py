@@ -37,9 +37,9 @@ write(
     "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: chaeeon-cv-app\n  labels:\n" + LABELS,
     block("server.py", (SRC / "server.py").read_text(encoding="utf-8"))
     + block("index.html", (SRC / "index.html").read_text(encoding="utf-8"))
-    + block("killingpart.jpg.b64", base64.b64encode((SRC / "assets/killingpart.jpg").read_bytes()).decode())
-    + "".join(block(name, (SRC / "assets" / name).read_text(encoding="utf-8"))
-              for name in ("alarmclock.svg", "hankyul.svg", "jobmate.svg", "pnubuddy.svg")),
+    + "".join(block(name + ".b64", base64.b64encode((SRC / "assets" / name).read_bytes()).decode())
+              for name in ("killingpart.jpg", "alarmclock.jpg"))
+    + block("compose.svg", (SRC / "assets/compose.svg").read_text(encoding="utf-8")),
 )
 
 write(
