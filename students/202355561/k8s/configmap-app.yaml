@@ -184,7 +184,7 @@ data:
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Yeo ChaeEon · Portfolio</title>
-    <meta name="description" content="Yeo ChaeEon — generalizable robot manipulation and Sim2Real learning. Interactive portfolio served from OpenShift.">
+    <meta name="description" content="Yeo ChaeEon — robot manipulation policy learning and Sim2Real. Interactive portfolio served from OpenShift.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
@@ -969,7 +969,7 @@ data:
         nav,
         h("div", { class: "hero-panel" },
           h("div", { class: "hero-copy" },
-            h("div", { class: "eyebrow" }, "Robot learning · Sim2Real"),
+            h("div", { class: "eyebrow" }, "Policy learning · Sim2Real"),
             h("h1", {}, P.name, h("small", {}, `${P.nameKo} · ${P.education[0].school}`)),
             h("p", { class: "lead" }, P.taglineKo),
             h("p", { class: "meta" }, P.tagline),
@@ -978,7 +978,7 @@ data:
             document.querySelector("#robotVisual").content.firstElementChild.cloneNode(true),
             h("div", { class: "visual-caption" }, h("strong", {}, "SO-101"), "  ·  pick, place, adapt"),
             h("div", { class: "mascot-wrap" }, note, bot))),
-        section("research", "01 / FOCUS", "무엇을 연구하나요?", "시뮬레이션과 실제 환경의 차이를 줄이고, 다양한 배치와 조건에 적응하는 조작 정책을 탐구합니다.",
+        section("research", "01 / FOCUS", "무엇을 연구하나요?", "실물 시연과 MuJoCo 데이터를 결합해 로봇 조작 정책을 학습하고, Sim2Real 환경에서 평가합니다.",
           h("div", { class: "research-grid" }, ...P.interests.map((t, i) => h("div", { class: "research-card" }, h("span", { class: "research-icon", "aria-hidden": "true" }, String(i + 1).padStart(2,"0")), h("p", {}, t))))),
         section("spotlight", "02 / RESEARCH CASE", "SO-101 연구 노트", "실물 로봇에서 무엇을 시험했고, 어디서 한계를 발견했는지 정리했습니다.",
           h("article", { class: "spotlight" },
