@@ -107,30 +107,19 @@ oc get route chaeeon-cv
 
 ## 5. 배포 결과와 증빙
 
-이전 대화에서 사용자가 `/`, `/healthz`, `/readyz`의 **HTTP 200**을 직접 확인했습니다. 아래 실제 캡처에서는 Pod 2개가 각각 **1/1 Running**, Deployment와 ReplicaSet이 **2/2 Ready**, Service가 **8080/TCP**, Route가 **edge/Redirect**인 것을 확인할 수 있습니다.
+이전 대화에서 사용자가 Route의 `/`, `/healthz`, `/readyz` 경로가 각각 **HTTP 200**을 반환한다고 확인했습니다. 아래 캡처에는 과제 리소스만 조회한 명령의 정상 출력이 보입니다. Deployment와 ReplicaSet은 **2/2**, Pod 2개는 각각 **1/1 Running**, Service는 **8080/TCP**, Route는 `chaeeon-cv` Service를 대상으로 **edge/Redirect**로 설정되어 있습니다.
 
-![OpenShift 배포 결과: Pod 2개 Running, Deployment 2/2, Service 8080/TCP, HTTPS Route](images/01-oc-get-all.png)
+![chaeeon-cv Deployment, ReplicaSet, Pod 2개, Service 및 Route 상태](images/01-resource-status.png)
 
-권한 오류 없이 주요 리소스를 확인한 추가 캡처입니다. Route 행은 화면 아래에서 잘려 있으므로 Route 정보는 앞의 캡처를 참고합니다. 이 화면에는 Endpoints가 나오지 않아 Endpoints 2개 연결 여부는 아직 미확인입니다.
+OpenShift Developer 콘솔의 Topology에는 `chaeeon-portfolio` 애플리케이션과 Python 런타임의 `chaeeon-cv` Deployment가 표시됩니다. Pod 수와 Service·Route 연결은 위 명령 결과와 2장의 Mermaid 구성도를 참고합니다.
 
-![OpenShift 주요 리소스 상태: Deployment와 ReplicaSet 2/2, Pod 2개 Running, Service 8080/TCP](images/05-resource-status.png)
+![OpenShift Developer Topology의 chaeeon-cv Deployment](images/02-topology.png)
 
-첫 번째 캡처의 `oc get all` 명령은 마지막에 `applications.app.k8s.io` 목록 조회 권한 오류를 반환했습니다. 따라서 **전체 명령의 정상 종료를 증명하는 캡처는 아니지만**, 위에 출력된 `chaeeon-cv` 리소스의 상태는 확인됩니다. 함께 보이는 `modelmesh-serving` Service는 이 과제 서비스가 아닙니다. 터미널 화면에서도 `neofetch`를 통해 Pod 이름, namespace, 노드, Pod IP, 이미지와 리소스 제한이 표시되는 것을 확인했습니다. 이 화면에는 브라우저 주소창이 없어 HTTPS 주소 자체는 증빙하지 않습니다. 나머지 이미지 파일은 아직 제공되지 않았습니다.
+아래 브라우저 캡처에는 Route 호스트와 터미널 포트폴리오의 `neofetch` 실행 결과가 보입니다. 화면에는 Pod 이름, namespace, 노드, Pod IP, 이미지와 리소스 제한이 표시됩니다. 주소창은 호스트를 보여 주지만 프로토콜 문자열은 생략되어 있으므로, **HTTPS 응답 확인은 위의 경로 검사 결과와 Route의 edge TLS 설정을 근거로 합니다.** 웹페이지 디자인은 추후 수정할 예정이며, 이 이미지는 현재 배포 화면의 증빙입니다.
 
-![터미널 포트폴리오와 neofetch 실행 결과](images/03-browser-terminal.png)
+![Route 호스트로 접속한 터미널 포트폴리오와 neofetch 실행 결과](images/03-browser-terminal.png)
 
-<!-- 나머지 캡처를 images/에 저장한 뒤 실제 이미지 링크로 교체 -->
-
-| 파일명 | 찍을 화면 | 현재 상태 |
-|---|---|---|
-| `images/01-oc-get-all.png` | `oc get all` 실행 결과. Pod 2개, Deployment, Service, Route가 보임. 마지막에 권한 오류가 표시됨 | 수령·삽입 완료 |
-| `images/02-topology.png` | OpenShift 웹 콘솔 **Developer → Topology**. `chaeeon-cv`와 연결 관계가 보이게 캡처 | 미수령 |
-| `images/03-browser-terminal.png` | 터미널 포트폴리오와 `neofetch` 실행 결과. 주소창은 포함되지 않음 | 수령·삽입 완료 |
-| `images/04-browser-portfolio.png` | `https://<Route host>/#portfolio` 일반 포트폴리오 화면 | 미수령 |
-| `images/05-resource-status.png` | `oc get deployment,replicaset,pod,service,route -l app=chaeeon-cv` 실행 결과. 하단 Route 행은 잘렸으며 Endpoints는 포함되지 않음 | 수령·삽입 완료 |
-| `images/06-http-200.png` | 위의 세 경로 검사 명령 및 HTTP 200 세 줄 | 미수령 |
-
-캡처에는 로그인 토큰, Secret 내용, 개인 정보가 보이지 않게 합니다. `oc get secret -o yaml`, `oc describe secret`, 비밀번호 입력 장면은 캡처하지 않습니다. Route 호스트명은 공개 저장소에 노출해도 되는지 확인합니다. 캡처를 받은 뒤 README에 실제 이미지를 연결합니다.
+일반 포트폴리오 화면(`/#portfolio`)의 최종 캡처와 삭제 후 재배포 검증 결과는 아직 제공되지 않았습니다. 화면 수정 후 최종 캡처로 교체할 예정입니다.
 
 ## 6. 문제 해결 기록
 
@@ -167,7 +156,7 @@ students/202355561/
 │   ├── profile.json
 │   └── server.py
 ├── tools/gen_configmaps.py
-└── images/                 # 실제 캡처 수령 후 추가
+└── images/                 # 배포 상태·Topology·브라우저 캡처
 ```
 
-> 과제 제출 전: 실제 캡처 삽입, 본인 Sandbox에서 삭제 후 재배포 검증, 변경 사항 Commit·Push, 저장소 URL 제출이 남아 있습니다.
+> 과제 제출 전: 웹페이지 수정 후 최종 브라우저 캡처 교체, 본인 Sandbox에서 삭제 후 재배포 검증, 저장소 Push와 URL 제출이 남아 있습니다.
