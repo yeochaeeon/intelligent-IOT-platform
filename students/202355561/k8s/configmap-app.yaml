@@ -458,7 +458,7 @@ data:
         <div class="title" id="title"><b>chaeeon@portfolio</b> — <span class="pod" id="titlePod">connecting…</span></div>
         <div class="switch" role="group" aria-label="보기 방식">
           <button type="button" id="btnTerm" aria-pressed="true">Terminal</button>
-          <button type="button" id="btnGui" aria-pressed="false">Portfolio</button>
+          <button type="button" id="btnGui" aria-pressed="false">GUI</button>
         </div>
       </header>
 
