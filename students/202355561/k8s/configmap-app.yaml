@@ -184,7 +184,7 @@ data:
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Yeo ChaeEon · Portfolio</title>
-    <meta name="description" content="Yeo ChaeEon — robot learning, reinforcement learning, Sim2Real. Interactive terminal portfolio served from an OpenShift pod.">
+    <meta name="description" content="Yeo ChaeEon — generalizable robot manipulation and Sim2Real learning. Interactive portfolio served from OpenShift.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
@@ -952,7 +952,7 @@ data:
             h("div", { class: "orbit" }), h("div", { class: "visual-center" }, "R→R"),
             h("div", { class: "visual-caption" }, h("strong", {}, "SIM → REAL"), "  ·  learn, test, recover"),
             h("div", { class: "mascot-wrap" }, note, bot))),
-        section("research", "01 / FOCUS", "무엇을 연구하나요?", "로봇이 시뮬레이션에서 배운 동작을 실제 환경에서도 안정적으로 수행하도록 연구합니다.",
+        section("research", "01 / FOCUS", "무엇을 연구하나요?", "시뮬레이션과 실제 환경의 차이를 줄이고, 다양한 배치와 조건에 적응하는 조작 정책을 탐구합니다.",
           h("div", { class: "research-grid" }, ...P.interests.map((t, i) => h("div", { class: "research-card" }, h("span", { class: "research-icon", "aria-hidden": "true" }, String(i + 1).padStart(2,"0")), h("p", {}, t))))),
         section("spotlight", "02 / RESEARCH CASE", "SO-101 연구 노트", "실물 로봇에서 무엇을 시험했고, 어디서 한계를 발견했는지 정리했습니다.",
           h("article", { class: "spotlight" },
