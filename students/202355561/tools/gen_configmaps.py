@@ -48,7 +48,7 @@ write(
     "#  - profile.json   : /opt/app-root/profile 에 파일로 마운트 (수정 시 재배포 없이 약 1분 내 반영)\n"
     "#  - WELCOME_MESSAGE, DEFAULT_THEME : 환경변수로 주입 (수정 후 oc rollout restart 필요)\n"
     "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: chaeeon-cv-profile\n  labels:\n" + LABELS,
-    '  WELCOME_MESSAGE: "OpenShift Pod 위에서 돌아가는 터미널 포트폴리오에 오신 걸 환영합니다."\n'
+    '  WELCOME_MESSAGE: "OpenShift Pod에서 실행되는 터미널형 포트폴리오입니다."\n'
     '  DEFAULT_THEME: "sim"\n'
     + block("profile.json", (SRC / "profile.json").read_text(encoding="utf-8")),
 )

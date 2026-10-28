@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/name: chaeeon-cv
     app.kubernetes.io/part-of: chaeeon-portfolio
 data:
-  WELCOME_MESSAGE: "OpenShift Pod 위에서 돌아가는 터미널 포트폴리오에 오신 걸 환영합니다."
+  WELCOME_MESSAGE: "OpenShift Pod에서 실행되는 터미널형 포트폴리오입니다."
   DEFAULT_THEME: "sim"
   profile.json: |
     {

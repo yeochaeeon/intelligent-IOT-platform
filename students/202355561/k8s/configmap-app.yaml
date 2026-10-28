@@ -1081,9 +1081,12 @@ data:
       printBanner();
       if (P) {
         line(span("h", `${P.name} · ${P.nameKo}`), span("dim", `  —  ${P.headline}`));
-        line(INFO && INFO.welcome ? INFO.welcome : P.taglineKo);
+        line(INFO && INFO.welcome ? INFO.welcome : "OpenShift Pod에서 실행되는 터미널형 포트폴리오입니다.");
         blank();
-        line("시작하려면 ", cmdLink("help"), " 를 입력하거나 아래 버튼을 눌러보세요. 일반 화면이 편하면 ", cmdLink("gui"), ".");
+        line(cmdLink("about"), ", ", cmdLink("research"), ", ", cmdLink("experience"), ", ", cmdLink("projects"), " 명령어로 제 소개와 연구·프로젝트 경험을 살펴볼 수 있습니다.");
+        line(cmdLink("GUI"), "를 입력하거나 오른쪽 위 GUI 버튼을 누르면 일반 포트폴리오 화면으로 전환됩니다.");
+        blank();
+        line("시작하려면 ", cmdLink("help"), "를 입력하거나 아래 버튼을 눌러보세요.");
       }
       blank();
       scroll();
