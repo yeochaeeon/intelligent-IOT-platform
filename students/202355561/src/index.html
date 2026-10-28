@@ -228,6 +228,7 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
 .simple-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
 .simple-card h3 { font-size: 16px; }
 .simple-card p { margin: 5px 0 0; }
+.simple-card .award-en { color: var(--muted); font-size: 14px; line-height: 1.5; }
 .runtime { margin-top: 56px; }
 .mascot-wrap { position: absolute; top: 22px; right: 22px; width: max-content; z-index: 3; display: flex; align-items: end; gap: 8px; }
 .mascot-note { max-width: 210px; padding: 7px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: 12px/1.45 "IBM Plex Sans KR", sans-serif; box-shadow: 0 8px 30px #0003; }
@@ -826,7 +827,7 @@ function renderGui() {
     section("skills", "05 / TOOLBOX", "기술 스택", "연구와 제품 개발에서 사용한 언어와 도구입니다.",
       h("div", { class: "skills-grid" }, ...Object.entries(P.skills).map(([k, v]) => h("div", { class: "skills-card" }, h("h3", {}, k), tagRow(v))))),
     section("awards", "06 / RECOGNITION", "수상과 장학", "프로젝트와 학업에서 얻은 결과입니다.",
-      h("div", { class: "simple-grid" }, ...P.awards.map(a => h("div", { class: "simple-card" }, h("h3", {}, a.title), h("p", { class: "meta" }, `${a.org} · ${a.year}`))))),
+      h("div", { class: "simple-grid" }, ...P.awards.map(a => h("div", { class: "simple-card" }, h("h3", {}, a.titleKo || a.title), h("p", { class: "award-en" }, a.title), h("p", { class: "meta" }, `${a.org} · ${a.year}`))))),
     section("education", "07 / BACKGROUND", "교육과 활동", "학업과 커뮤니티 활동입니다.",
       h("div", { class: "simple-grid" }, ...P.education.map(e => h("div", { class: "simple-card" }, h("h3", {}, e.school), h("p", { class: "meta" }, `${e.degree} · ${e.period} · ${e.note}`))), ...P.activities.map(a => h("div", { class: "simple-card" }, h("p", {}, a))))),
     runtimeBox()

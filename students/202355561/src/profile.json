@@ -193,22 +193,26 @@
     {
       "title": "Academic Excellence Scholarship",
       "org": "Pusan National University",
-      "year": "Fall 2024, Fall 2025, Spring 2026, Fall 2026"
+      "year": "Fall 2024, Fall 2025, Spring 2026, Fall 2026",
+      "titleKo": "성적우수 장학금"
     },
     {
       "title": "Third Place, 6th PNU Creative Convergence SW Hackathon",
       "org": "Pusan National University",
-      "year": "2025"
+      "year": "2025",
+      "titleKo": "제6회 부산대학교 창의융합 SW 해커톤 장려상"
     },
     {
       "title": "Third Place, 5th PNU Creative Convergence SW Hackathon",
       "org": "Pusan National University",
-      "year": "2024"
+      "year": "2024",
+      "titleKo": "제5회 부산대학교 창의융합 SW 해커톤 장려상"
     },
     {
       "title": "Grand Prize, SW Innovation Startup Hackathon",
       "org": "Pusan National University",
-      "year": "2023"
+      "year": "2023",
+      "titleKo": "SW 혁신창업 해커톤 최우수상"
     }
   ],
   "activities": [
