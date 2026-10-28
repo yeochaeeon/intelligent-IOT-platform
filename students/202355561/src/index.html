@@ -209,6 +209,7 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
 .research-card { display: flex; gap: 14px; align-items: start; min-height: 130px; }
 .research-icon { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 10px; color: var(--z); background: color-mix(in srgb, var(--z) 15%, var(--surface)); font: 600 16px "IBM Plex Mono", monospace; }
 .research-card p { margin: 0; font-size: 16px; line-height: 1.6; }
+.research-card .research-ko { margin-top: 9px; color: var(--muted); font-size: 14px; line-height: 1.65; }
 .experience-list, .project-grid { display: grid; gap: 16px; }
 .experience-card h3, .project-card h3 { font-size: 21px; line-height: 1.3; }
 .experience-card .meta, .project-card .meta { margin: 5px 0 14px; }
@@ -798,8 +799,8 @@ function renderGui() {
         document.querySelector("#robotVisual").content.firstElementChild.cloneNode(true),
         h("div", { class: "visual-caption" }, h("strong", {}, "SO-101"), "  ·  pick, place, adapt"),
         h("div", { class: "mascot-wrap" }, note, bot))),
-    section("research", "01 / FOCUS", "무엇을 연구하나요?", "실물 시연과 MuJoCo 데이터를 결합해 로봇 조작 정책을 학습하고, Sim2Real 환경에서 평가합니다.",
-      h("div", { class: "research-grid" }, ...P.interests.map((t, i) => h("div", { class: "research-card" }, h("span", { class: "research-icon", "aria-hidden": "true" }, String(i + 1).padStart(2,"0")), h("p", {}, t))))),
+    section("research", "01 / FOCUS", "무엇을 연구했나요?", "실물 시연과 MuJoCo 데이터를 결합해 로봇 조작 정책을 학습하고, Sim2Real 환경에서 평가합니다.",
+      h("div", { class: "research-grid" }, ...P.interests.map((t, i) => h("div", { class: "research-card" }, h("span", { class: "research-icon", "aria-hidden": "true" }, String(i + 1).padStart(2,"0")), h("div", {}, h("p", {}, t), h("p", { class: "research-ko" }, P.interestDetailsKo[i])))))),
     section("spotlight", "02 / RESEARCH CASE", "SO-101 연구 노트", "실물 로봇에서 무엇을 시험했고, 어디서 한계를 발견했는지 정리했습니다.",
       h("article", { class: "spotlight" },
         h("div", { class: "spotlight-head" }, h("div", { class: "section-kicker" }, "PICK & PLACE / PICK & STACK"),
