@@ -160,6 +160,8 @@ Route 주소로 접속한 터미널 포트폴리오에서 `neofetch`를 실행�
 
 Route의 `/`, `/healthz`, `/readyz`는 각각 **HTTP 200**을 반환했습니다.
 
+![Route의 세 경로가 각각 HTTP 200을 반환한 터미널 검증 결과](images/04-route-http-200.png)
+
 ## 6. 어려웠던 점과 해결 과정
 
 | 현상 | 원인과 해결 |
