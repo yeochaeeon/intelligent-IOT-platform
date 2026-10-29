@@ -5,4 +5,4 @@
 
 - 제출자: [202355561 여채언](students/202355561/README.md)
 - 배포: `cd students/202355561 && oc apply -f k8s/`
-- 상태: GitHub Push 완료, Developer Sandbox 실제 배포 확인 전
+
