@@ -153,7 +153,7 @@ OpenShift Developer Sandbox에서 Deployment와 ReplicaSet **2/2 Ready**, Pod **
 
 Developer 콘솔 Topology 화면에서 `chaeeon-portfolio` 애플리케이션의 Python Deployment `chaeeon-cv`를 확인했습니다.
 
-![OpenShift Topology 화면](images/02-topology.png)
+<img src="images/02-topology.png" alt="OpenShift Topology 화면" width="33%">
 
 Route 주소로 접속한 터미널 포트폴리오에서 `neofetch`를 실행해 Pod 이름, namespace, 노드, Pod IP, 이미지, 리소스 제한이 표시되는 것을 확인했습니다.
 
@@ -165,16 +165,55 @@ Route의 `/`, `/healthz`, `/readyz`는 각각 **HTTP 200**을 반환했습니다
 
 ## 6. 어려웠던 점과 해결 과정
 
-| 현상 | 원인과 해결 |
-|---|---|
-| `oc get all` 끝에 `applications.app.k8s.io is forbidden` 오류가 표시됨 | 현재 계정에 해당 API 리소스의 목록 조회 권한이 없습니다. Pod·Deployment·Service·Route는 조회되므로 배포 자체의 오류는 아닙니다. `oc get deployment,replicaset,pod,service,route -l app=chaeeon-cv`로 과제에 필요한 리소스만 확인했습니다. |
+### OpenShift CLI 권한 오류와 조회 범위
+
+`oc get all`을 실행하면 Pod, Service, Deployment 등의 목록 뒤에 `applications.app.k8s.io is forbidden`이 표시됐습니다. 이는 현재 Developer Sandbox 계정에 `applications.app.k8s.io` 리소스를 **조회할 권한이 없기 때문**입니다. 화면에 표시된 Pod와 Deployment는 정상 상태였으므로 서비스 장애로 판단하지 않았습니다. 대신 과제에서 사용하는 오브젝트만 지정해 조회했습니다.
+
+```bash
+oc get deployment,replicaset,pod,service,route -l app=chaeeon-cv
+oc get configmap,secret -l app=chaeeon-cv
+```
+
+첫 명령에서 Deployment·ReplicaSet `2/2`, Pod 2개 `1/1 Running`, Service와 Route를 확인했습니다. `oc get all`의 마지막 권한 오류는 이 리소스들의 배포 실패를 뜻하지 않습니다.
+
+### CLI 로그인 만료와 HTTP 000
+
+Route의 응답 코드를 다시 확인할 때 `oc`가 인증 정보를 요구했고, Route 호스트를 읽는 명령이 실패했습니다. 그 상태에서 빈 `$HOST` 값으로 `curl`을 실행해 `URL rejected`, `Could not resolve host`, `HTTP 000`이 나타났습니다. `000`은 서버가 반환한 HTTP 상태 코드가 아니라 **요청 자체가 이루어지지 않았다는 표시**입니다. OpenShift 콘솔의 로그인 명령으로 CLI에 다시 로그인한 뒤 호스트를 받아 검사했습니다.
+
+```bash
+HOST=$(oc get route chaeeon-cv -o jsonpath='{.spec.host}')
+for endpoint in / /healthz /readyz; do
+  curl -sS -o /dev/null -w "${endpoint}: HTTP %{http_code}\n" "https://${HOST}${endpoint}"
+done
+```
+
+재검사에서 세 경로 모두 HTTP 200을 확인했습니다. 결과 화면은 `images/04-route-http-200.png`에 첨부했습니다.
+
+### `k8s/` 경로와 배포 위치
+
+홈 디렉터리에서 `oc delete -f k8s/`를 실행했을 때 `the path "k8s/" does not exist`가 발생했습니다. `k8s/`는 이 과제 폴더의 상대 경로이므로 저장소 루트에서 `cd students/202355561`로 이동한 뒤 명령을 실행해야 합니다. README의 배포 명령에도 실행 위치를 명시했습니다.
+
+### 소스 수정 후 화면이 바로 바뀌지 않음
+
+웹 화면의 원본은 `src/`에 있지만 Pod가 제공하는 파일은 `k8s/configmap-app.yaml`에 들어 있습니다. 따라서 `src/index.html`만 수정하면 실행 중인 Pod에는 변경이 전달되지 않습니다. `python3 tools/gen_configmaps.py`로 ConfigMap YAML을 다시 만들고 `oc apply -f k8s/`를 실행한 뒤 Deployment를 재시작해 새 Pod에 반영했습니다. 기존에 열어 둔 브라우저 탭은 이전 JavaScript를 계속 실행할 수 있어 새로고침 후 확인했습니다.
+
+```bash
+python3 tools/gen_configmaps.py
+oc apply -f k8s/
+oc rollout restart deployment/chaeeon-cv
+oc rollout status deployment/chaeeon-cv
+```
+
+### Topology에 Python 아이콘 하나만 보임
+
+Developer 콘솔의 Topology에는 `chaeeon-cv` Python Deployment가 하나의 아이콘으로 표시됐습니다. Pod 복제본 2개는 같은 Deployment가 관리하므로 별도 아이콘 두 개로 그려지지 않습니다. ConfigMap과 Secret도 Topology의 실행 워크로드 아이콘이 아닙니다. 실제 복제본 수와 상태는 `oc get deployment,replicaset,pod -l app=chaeeon-cv`로 확인했습니다.
 
 ## 7. AI·참고자료 활용 내역
 
 | 도구·자료 | 활용 내용 |
 |---|---|
 | Claude (Anthropic) | 주제 아이디어, 터미널 UI·Python 서버, OpenShift YAML과 README의 초안 작성에 활용했습니다. |
-| Codex | README 구성과 배포 증빙 설명, 포트폴리오의 KOR/ENG 화면 및 카드 이미지 구현에 활용했습니다. STM32 보드 이미지는 AI로 생성한 콘셉트 사진이며 실제 제작물 사진이 아닙니다. |
+| Codex | README 구성과 배포 증빙 설명, 포트폴리오의 KOR/ENG 화면 및 카드 이미지 구현에 활용했습니다. |
 | [Kubernetes ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) | 설정과 파일의 Pod 주입 방식 참고 |
 | [Kubernetes Downward API](https://kubernetes.io/docs/concepts/workloads/pods/downward-api/) | Pod 메타데이터와 리소스 정보 주입 방식 참고 |
 | [Kubernetes Probes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/) | Readiness·Liveness Probe 설정 참고 |
@@ -196,10 +235,11 @@ students/202355561/
 │   ├── index.html
 │   ├── profile.json
 │   ├── server.py
-│   └── assets/             # 킬링파트 제공 이미지, STM32 보드 콘셉트 사진, Compose 일러스트
+│   └── assets/             # 킬링파트 제공 이미지, STM32 보드 사진, Compose 일러스트
 ├── tools/gen_configmaps.py
 └── images/
     ├── 01-resource-status.png
     ├── 02-topology.png
-    └── 03-browser-terminal.png
+    ├── 03-browser-terminal.png
+    └── 04-route-http-200.png
 ```
