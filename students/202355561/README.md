@@ -35,7 +35,7 @@ flowchart LR
     F -.->|환경변수| P2
 ```
 
-### 내 서비스에서 요청이 처리되는 순서
+### 서비스에서 요청이 처리되는 순서
 
 1. 사용자가 Route의 HTTPS 주소에 접속합니다. Route `chaeeon-cv`는 TLS를 종료하고 요청을 같은 이름의 Service로 보냅니다. HTTP 접속은 HTTPS로 리다이렉트합니다.
 2. Service `chaeeon-cv`는 `app: chaeeon-cv` 레이블이 붙은 **Ready Pod**를 찾습니다. Service의 8080/TCP는 Pod 안 Python 서버의 이름 붙은 포트 `http`(8080)로 연결됩니다. Service는 클러스터 내부 주소이므로 외부 접속은 Route를 사용합니다.
