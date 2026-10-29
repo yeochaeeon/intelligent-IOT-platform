@@ -1,4 +1,4 @@
-# chaeeon-cv — OpenShift 터미널 포트폴리오
+# chaeeon-cv: OpenShift 터미널 포트폴리오
 
 지능형IoT플랫폼 · 나만의 컨테이너 만들기 · `students/202355561`
 
@@ -41,31 +41,19 @@ flowchart LR
 2. Service `chaeeon-cv`는 `app: chaeeon-cv` 레이블이 붙은 **Ready Pod**를 찾습니다. Service의 8080/TCP는 Pod 안 Python 서버의 이름 붙은 포트 `http`(8080)로 연결됩니다. Service는 클러스터 내부 주소이므로 외부 접속은 Route를 사용합니다.
 3. Deployment가 관리하는 Pod 2개는 같은 서버를 실행합니다. 서버는 `/`에서 터미널 화면, `/api/profile`에서 포트폴리오 데이터, `/assets/`에서 카드 이미지를 반환합니다. 브라우저의 GUI 버튼은 같은 페이지에서 화면 모드를 바꾸며, `lb 10`은 `/api/info`를 반복 호출해 응답한 Pod 이름을 보여줍니다.
 
-### 제출한 Kubernetes Object가 이 서비스에서 하는 일
+### 사용한 Object 목록과 각 역할
 
-**Deployment `chaeeon-cv` — 서버를 실행하고 두 복제본을 유지** (`k8s/deployment.yaml`)
+- **Deployment `chaeeon-cv`** (`k8s/deployment.yaml`): UBI Python 3.11 이미지에서 서버를 실행하고 Pod 2개를 유지합니다. 서버 코드와 포트폴리오 데이터를 각각 ConfigMap에서 읽기 전용으로 마운트합니다. 업데이트 시 `maxUnavailable: 0`, `maxSurge: 1`을 적용하고 CPU·메모리 요청량과 제한량을 지정했습니다. ReplicaSet과 Pod는 Deployment가 자동으로 생성합니다.
 
-공개 UBI Python 3.11 이미지에서 `python3 -u /opt/app-root/app/server.py`를 실행합니다. 서버 코드가 담긴 ConfigMap을 `/opt/app-root/app`, 포트폴리오 데이터가 담긴 ConfigMap을 `/opt/app-root/profile`에 읽기 전용으로 마운트합니다. `replicas: 2`로 두 Pod를 유지해 한 Pod가 종료되거나 교체되는 동안 다른 Pod가 응답할 수 있게 했습니다. 업데이트 전략은 `maxUnavailable: 0`, `maxSurge: 1`이며 CPU·메모리 요청량과 제한량도 지정했습니다. Deployment가 ReplicaSet과 Pod를 자동으로 생성하므로 이 둘의 YAML은 별도로 제출하지 않습니다.
+- **Service `chaeeon-cv`** (`k8s/service.yaml`): `app: chaeeon-cv` 레이블로 준비된 Pod를 찾아 하나의 내부 접속점으로 묶습니다. Service의 `targetPort: http`는 컨테이너의 8080 포트를 가리킵니다. `/readyz`에 실패한 Pod는 요청 대상에서 빠집니다. 연결된 Pod IP는 `oc get endpoints chaeeon-cv`로 확인할 수 있습니다.
 
-**Service `chaeeon-cv` — 준비된 두 Pod를 하나의 내부 접속점으로 묶음** (`k8s/service.yaml`)
+- **Route `chaeeon-cv`** (`k8s/route.yaml`): 브라우저의 HTTPS 요청을 Service의 `http` 포트로 전달합니다. `edge` TLS를 사용하고 HTTP 요청은 HTTPS로 돌립니다. 고정 세션을 끄고 `roundrobin`을 지정해 `lb 10` 명령으로 여러 Pod의 응답을 볼 수 있게 했습니다. Route 주소는 OpenShift가 생성합니다.
 
-Deployment의 Pod 레이블과 Service의 selector가 모두 `app: chaeeon-cv`입니다. 이 값이 맞아야 Service가 Pod를 찾을 수 있습니다. Service의 `targetPort: http`는 컨테이너에서 이름 붙인 8080 포트를 가리킵니다. `/readyz`에 실패한 Pod는 Service의 정상 응답 대상에서 빠집니다. `oc get endpoints chaeeon-cv`로 연결된 Pod IP를 확인할 수 있습니다.
+- **ConfigMap `chaeeon-cv-app`** (`k8s/configmap-app.yaml`): `server.py`, `index.html`, 프로젝트 카드 이미지 데이터 3개를 `/opt/app-root/app`에 제공합니다. 서버는 여기서 `/` 화면과 `/assets/` 이미지를 반환합니다. 별도 이미지 빌드 없이 공개 Python 이미지를 사용할 수 있습니다.
 
-**Route `chaeeon-cv` — 브라우저의 HTTPS 요청을 Service에 연결** (`k8s/route.yaml`)
+- **ConfigMap `chaeeon-cv-profile`** (`k8s/configmap-profile.yaml`): `profile.json`을 `/opt/app-root/profile/profile.json`에 제공하고, `/api/profile`을 통해 터미널 명령과 GUI 화면의 이력 데이터를 공급합니다. `WELCOME_MESSAGE`와 `DEFAULT_THEME`도 환경변수로 전달합니다. 파일 내용은 볼륨 갱신 후 새 요청에서 읽지만, 환경변수 변경은 Pod 재시작이 필요합니다.
 
-Route는 `spec.to.name: chaeeon-cv`로 Service를 가리키고, Service의 `http` 포트를 사용합니다. `edge` TLS를 설정해 외부 HTTPS 연결을 받고 HTTP 요청은 HTTPS로 보냅니다. 쿠키 기반 고정 세션을 끄고 `roundrobin`을 지정해 `lb 10` 명령에서 여러 Pod의 응답을 관찰할 수 있게 했습니다. 응답 횟수가 정확히 반반으로 나뉘는 것은 보장하지 않습니다. Route의 host는 YAML에 고정하지 않고 OpenShift가 생성합니다.
-
-**ConfigMap `chaeeon-cv-app` — 서버 코드와 화면 파일을 공급** (`k8s/configmap-app.yaml`)
-
-`server.py`, `index.html`, 프로젝트 카드용 이미지 데이터 3개를 Pod의 `/opt/app-root/app`에 마운트합니다. Python 서버는 이 디렉터리의 `index.html`을 `/`에서 제공하고, 이미지 데이터는 `/assets/` 요청에 맞춰 반환합니다. 공개 이미지를 그대로 쓰면서 별도의 컨테이너 이미지 빌드 없이 포트폴리오 웹앱을 실행하기 위한 구성입니다.
-
-**ConfigMap `chaeeon-cv-profile` — 이력 내용과 화면 설정을 분리** (`k8s/configmap-profile.yaml`)
-
-`profile.json`은 `/opt/app-root/profile/profile.json`으로 마운트됩니다. 서버의 `/api/profile`이 이 파일을 읽고, 브라우저가 받은 데이터로 `about`, `research`, `projects`와 GUI 화면을 구성합니다. `WELCOME_MESSAGE`는 터미널 시작 문구, `DEFAULT_THEME`는 첫 화면의 색 테마로 환경변수에 주입됩니다. `profile.json` 변경은 ConfigMap 볼륨 갱신 후 새 요청에서 읽지만, 환경변수 변경은 Pod를 재시작해야 반영됩니다.
-
-**Secret `chaeeon-cv-secret` — 데모용 숨김 메시지 인증** (`k8s/secret.yaml`)
-
-`SUDO_PASSWORD`와 `SUDO_MESSAGE`를 Pod의 환경변수로 주입합니다. 웹 터미널에서 `sudo cat .secret`을 실행하면 비밀번호 입력 화면이 나오고, 브라우저가 `/api/sudo`에 입력값을 보냅니다. 서버는 Secret에서 받은 값과 비교해 성공할 때만 메시지를 반환합니다. 이는 실제 Linux `sudo` 권한 상승이 아니라 웹앱의 데모 기능입니다. 과제 재현을 위해 Secret의 데모 값이 YAML에 포함돼 있으므로 실제 비밀정보 저장 용도로 사용하지 않습니다.
+- **Secret `chaeeon-cv-secret`** (`k8s/secret.yaml`): `SUDO_PASSWORD`와 `SUDO_MESSAGE`를 환경변수로 전달합니다. 웹 터미널의 `sudo cat .secret`에서 입력한 값을 `/api/sudo`가 확인하고, 맞으면 메시지를 반환합니다. 실제 Linux 권한 상승은 아닙니다. 재현용 데모 값이 YAML에 포함되어 있어 실제 비밀정보 저장 용도로 사용하지 않습니다.
 
 ### Deployment 안에서 사용하는 기능
 
