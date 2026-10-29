@@ -204,10 +204,6 @@ oc rollout restart deployment/chaeeon-cv
 oc rollout status deployment/chaeeon-cv
 ```
 
-### Topology에 Python 아이콘 하나만 보임
-
-Developer 콘솔의 Topology에는 `chaeeon-cv` Python Deployment가 하나의 아이콘으로 표시됐습니다. Pod 복제본 2개는 같은 Deployment가 관리하므로 별도 아이콘 두 개로 그려지지 않습니다. ConfigMap과 Secret도 Topology의 실행 워크로드 아이콘이 아닙니다. 실제 복제본 수와 상태는 `oc get deployment,replicaset,pod -l app=chaeeon-cv`로 확인했습니다.
-
 ## 7. AI·참고자료 활용 내역
 
 | 도구·자료 | 활용 내용 |
