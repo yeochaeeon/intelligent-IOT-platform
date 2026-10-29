@@ -78,20 +78,53 @@ Red Hat UBI Python 이미지는 OpenShift의 비루트 실행 환경에 적합�
 
 ## 4. 배포 방법
 
-OpenShift Developer Sandbox에 `oc` CLI로 로그인한 다음 저장소 루트에서 아래 명령을 실행합니다. 적용 대상 프로젝트는 `oc project`로 확인합니다.
+### 4.1 배포
+
+OpenShift Developer Sandbox에 `oc` CLI로 로그인한 다음 저장소 루트에서 학번 폴더로 이동합니다. `oc project`로 적용 대상 프로젝트를 확인하고 배포합니다. 서버 코드와 화면 파일은 ConfigMap YAML에 포함되어 있어 별도의 이미지 빌드나 패키지 설치는 필요하지 않습니다.
 
 ```sh
 cd students/202355561
 oc project
 oc apply -f k8s/
+```
+
+`oc apply -f k8s/`는 Deployment, Service, Route, ConfigMap 2개와 Secret을 생성하거나 갱신합니다. 명령이 끝나도 Pod가 준비되기까지 시간이 걸릴 수 있습니다.
+
+### 4.2 배포 상태 확인
+
+아래 명령은 추가 배포 명령이 아니라 배포 결과를 확인하는 명령입니다.
+
+```sh
 oc rollout status deployment/chaeeon-cv
+```
+
+새 Pod가 준비될 때까지 기다립니다. 완료되면 `successfully rolled out`이 표시됩니다.
+
+```sh
 oc get deployment,replicaset,pod,service,route -l app=chaeeon-cv
+```
+
+Deployment가 `2/2`, Pod 2개가 각각 `1/1 Running`인지 확인합니다. Service 포트와 Route 주소도 여기서 볼 수 있습니다.
+
+```sh
 oc get configmap,secret -l app=chaeeon-cv
+```
+
+서버 코드용·프로필용 ConfigMap 2개와 Secret 1개가 생성됐는지 확인합니다. Secret 값은 출력하지 않습니다.
+
+```sh
 oc get endpoints chaeeon-cv
+```
+
+Service가 요청을 보낼 Pod 주소를 찾았는지 확인합니다. 주소가 없다면 Pod의 Ready 상태와 Service selector를 확인해야 합니다.
+
+### 4.3 접속 및 응답 확인
+
+```sh
 oc get route chaeeon-cv -o jsonpath='https://{.spec.host}{"\n"}'
 ```
 
-Pod 2개가 `1/1 Running`, Deployment가 `2/2`가 되어야 합니다. 브라우저에서 출력된 Route 주소를 열면 터미널 포트폴리오가 나타나고, `/#portfolio`에서는 KOR/ENG 전환이 가능한 포트폴리오 화면과 프로젝트별 이미지를 볼 수 있습니다. `/healthz`는 서버가 응답하면 HTTP 200, `/readyz`는 `index.html`과 `profile.json`이 마운트됐을 때 HTTP 200을 반환합니다.
+출력된 HTTPS 주소를 브라우저에서 열면 터미널 포트폴리오가 나타납니다. 주소 끝에 `/#portfolio`를 붙이면 KOR/ENG 전환이 가능한 일반 포트폴리오 화면을 볼 수 있습니다. `/healthz`는 서버가 응답하면 HTTP 200, `/readyz`는 `index.html`과 `profile.json`이 마운트됐을 때 HTTP 200을 반환합니다. 세 경로의 응답 코드는 아래 명령으로 확인합니다.
 
 ```sh
 HOST=$(oc get route chaeeon-cv -o jsonpath='{.spec.host}')
