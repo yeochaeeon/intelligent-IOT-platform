@@ -11,6 +11,7 @@
 | 터미널 포트폴리오 | `about`, `research`, `experience`, `projects`, `skills`, `awards`, `contact` | `profile.json` ConfigMap |
 | 일반 포트폴리오 | `gui` 또는 `/#portfolio`, 상단 KOR/ENG 버튼 | 브라우저 UI, 프로젝트별 이미지 |
 | 실행 Pod 정보 | `neofetch`, `oc get pod`, `hostname` | Downward API, `/api/info` |
+| 요청 경로 시각화 | `trace` | Route → Service → Pod 경로와 실제 `/api/info` 응답 Pod 표시 |
 | 요청 분산 확인 | `lb 10` | Deployment 복제본 2개, Service, Route |
 | 숨김 메시지 | `sudo cat .secret` | Secret, `/api/sudo` |
 | 상태 검사 | `/healthz`, `/readyz` | Liveness / Readiness Probe |

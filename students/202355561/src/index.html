@@ -99,6 +99,28 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
 .indent { padding-left: 2ch; }
 .block { margin: 4px 0 10px; }
 .bullet { display: grid; grid-template-columns: 2ch 1fr; }
+.neofetch-layout { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 18px; align-items: center; }
+.neofetch-art { white-space: pre; font-size: 17px; line-height: 1.05; font-weight: 600; }
+.neofetch-art .rainbow-green { color: #a6d88e; }
+.neofetch-art .rainbow-yellow { color: #f7cc7c; }
+.neofetch-art .rainbow-coral { color: #ef8c96; }
+.neofetch-art .rainbow-purple { color: #d6a0e8; }
+.neofetch-art .rainbow-blue { color: #78bff2; }
+[data-theme="paper"] .neofetch-art .rainbow-green { color: #3c793f; }
+[data-theme="paper"] .neofetch-art .rainbow-yellow { color: #9b6500; }
+[data-theme="paper"] .neofetch-art .rainbow-coral { color: #ad3e50; }
+[data-theme="paper"] .neofetch-art .rainbow-purple { color: #7641a0; }
+[data-theme="paper"] .neofetch-art .rainbow-blue { color: #286aa0; }
+@media (max-width: 700px) { .neofetch-layout { grid-template-columns: 1fr; gap: 8px; } .neofetch-art { font-size: 11px; overflow-x: auto; max-width: 100%; } }
+.trace-flow { display: grid; gap: 6px; max-width: 640px; margin: 10px 0; }
+.trace-step { display: grid; grid-template-columns: 2ch 9ch minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); overflow-wrap: anywhere; }
+.trace-step.active { border-color: var(--z); color: var(--text); background: var(--sel); }
+.trace-step.done { border-color: var(--y); color: var(--text); }
+.trace-step.error { border-color: var(--x); color: var(--x); }
+.trace-step .trace-icon { color: var(--z); }
+.trace-step.done .trace-icon { color: var(--y); }
+.trace-step.error .trace-icon { color: var(--x); }
+.trace-step .trace-name { font-weight: 600; }
 
 .inputrow { display: flex; align-items: baseline; gap: 1ch; }
 .inputrow input {
@@ -310,6 +332,7 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
   </svg>
 </template>
 
+
 <script>
 (() => {
 "use strict";
@@ -406,6 +429,7 @@ const HELP = [
   ["", ""],
   ["neofetch", "이 페이지를 실행 중인 Pod 정보"],
   ["oc get pod", "응답한 Pod 조회 (Downward API)"],
+  ["trace", "요청 경로와 실제 응답 Pod 보기"],
   ["lb [n]", "n번 요청해 로드밸런싱 확인"],
   ["sudo <cmd>", "관리자 전용 (Secret 비밀번호)"],
   ["theme [sim|paper|phosphor]", "색 테마 변경"],
@@ -603,7 +627,24 @@ C.curl = async (args) => {
 
 C.neofetch = async () => {
   const i = await refreshInfo();
-  const logo = ["      ▲ z", "      │", "      │", "      ●───── x", "     ╱", "    ╱ y"];
+  const art = String.raw`⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠴⠦⣤⡀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡞⢠⢖⠳⣄⠹⡂
+⠀⠀⠀⠀⠀⠀⠀⠀⢀⣜⣆⠸⣥⡢⡏⢰⡻⡤⡀
+⠀⠀⠀⠀⠀⠀⡠⡴⠋⠄⡑⢧⢦⢤⣲⡋⠄⢊⢳⢄
+⠀⠀⠀⣀⣠⢎⠋⠄⠡⢂⣢⠟⠀⠀⠀⠛⢮⢄⢂⠙⣦⢀⡀
+⢀⡴⠛⣈⣈⠙⢮⡌⣄⠷⠁⠀⠀⠀⠀⠀⠀⠙⠲⣞⠉⠉⠸⣖⠞⠪⠋⡷⡀
+⣺⠀⣞⠌⡘⣵⠀⢷⠙⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢳⢄⣀⣠⠗⠋⠋⢷⢹⡄
+⢱⣂⠱⠧⠦⠗⢠⣛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡫⢸⠆⠀⠀⠀⠈⣟⡖
+⠀⠑⠳⢴⠴⢜⠃⠝⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠆⠺⣥⣀⡀⠀⠀⠈
+⠀⠀⠀⠈⢷⠐⡈⡐⠈⠷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠫⠒⠗⠟⠆
+⠀⠀⠀⠀⠈⣗⠄⢂⠡⠁⠝⣆
+⠀⠀⠀⠀⠀⠘⡵⠐⡈⠌⠄⠩⣳⡀
+⠀⠀⠀⠀⠀⠀⠘⣇⢐⢨⢬⠲⠦⣻⢄
+⠀⠀⠀⠀⠀⠀⠀⠹⣲⠝⡠⡖⢖⣄⠙⣆
+⠀⠀⠀⠀⠀⠀⠀⠀⢵⠀⣯⡐⠠⣺⠀⣯
+⠀⠀⠀⠀⠀⠀⠀⠀⢺⠀⠀⠋⠋⠁⠀⣞
+⠀⠀⠀⠀⠀⠠⣛⠚⠹⠙⠓⡋⡋⠛⢚⢑⢋⢳⠆
+⠀⠀⠀⠀⠀⠈⠲⠳⠳⠕⠗⠖⠖⠗⠖⠖⠖⠞⠁`.split("\n");
   const info = i ? [
     [span("u", "guest"), "@", span("podc", i.podName)],
     [span("dim", "─".repeat(Math.min(32, 6 + i.podName.length)))],
@@ -618,8 +659,10 @@ C.neofetch = async () => {
     [span("ok", "Uptime    "), fmtUp(i.uptimeSeconds)],
     [span("ok", "Requests  "), String(i.requestsServed)]
   ] : [[span("err", "pod info unavailable")]];
-  const t = h("div", { class: "tbl", style: "grid-template-columns: max-content 1fr; gap: 0 28px" });
-  const left = h("div", { style: "white-space:pre; color: var(--z)" }, logo.join("\n"));
+  const t = h("div", { class: "neofetch-layout" });
+  const tones = ["rainbow-green", "rainbow-yellow", "rainbow-coral", "rainbow-purple", "rainbow-blue"];
+  const left = h("div", { class: "neofetch-art", role: "img", "aria-label": "색을 입힌 점자 문자 로봇팔" },
+    ...art.flatMap((row, index) => [span(tones[Math.min(4, Math.floor(index / 4))], row), "\n"]));
   const right = h("div", {}, ...info.map(r => h("div", {}, ...r)));
   t.append(left, right);
   out.append(t);
@@ -646,6 +689,50 @@ C.lb = async (args) => {
   line(span("dim", seen.size > 1
     ? `→ ${seen.size}개의 Pod가 요청을 나눠 처리했습니다.`
     : "→ Pod 1개가 모두 응답했습니다. (replicas가 1이거나 다른 Pod가 아직 준비 중일 수 있어요)"));
+};
+
+C.trace = async () => {
+  line(span("h", "Request trace"));
+  line(span("dim", "배포 구성에 따른 경로를 따라가며 /api/info를 한 번 호출합니다."));
+  const flow = h("div", { class: "trace-flow", role: "status", "aria-live": "polite" });
+  const steps = [
+    ["Browser", location.host || "현재 브라우저"],
+    ["Route", "HTTPS · edge TLS"],
+    ["Service", "chaeeon-cv:8080"],
+    ["Pod", "응답 대기 중"]
+  ];
+  const nodes = steps.map(([name, detail]) => h("div", { class: "trace-step" },
+    h("span", { class: "trace-icon" }, "○"),
+    h("span", { class: "trace-name" }, name),
+    h("span", { class: "trace-detail" }, detail)));
+  flow.append(...nodes); out.append(flow); scroll();
+  for (let n = 0; n < 3; n++) {
+    nodes[n].classList.add("active");
+    nodes[n].querySelector(".trace-icon").textContent = "●";
+    await sleep(350);
+    nodes[n].classList.replace("active", "done");
+    nodes[n].querySelector(".trace-icon").textContent = "✓";
+    scroll();
+  }
+  nodes[3].classList.add("active");
+  nodes[3].querySelector(".trace-icon").textContent = "●";
+  const start = performance.now();
+  try {
+    const r = await api("/api/info");
+    if (!r.ok || !r.body.podName) throw new Error(`HTTP ${r.status}`);
+    INFO = r.body; paintTitle();
+    nodes[3].querySelector(".trace-detail").textContent = r.body.podName;
+    nodes[3].classList.replace("active", "done");
+    nodes[3].querySelector(".trace-icon").textContent = "✓";
+    line(span("ok", `HTTP ${r.status}`), span("dim", ` · ${Math.round(performance.now() - start)} ms · 실제 응답 Pod: `), span("podc", r.body.podName));
+    line(span("dim", "Route·Service 단계는 배포 구성에 따른 경로입니다. 각 단계의 통과 여부를 따로 측정한 결과는 아닙니다."));
+  } catch (e) {
+    nodes[3].classList.replace("active", "error");
+    nodes[3].querySelector(".trace-icon").textContent = "!";
+    nodes[3].querySelector(".trace-detail").textContent = "응답 확인 실패";
+    line(span("err", `요청 실패: ${e.message}`));
+  }
+  scroll();
 };
 
 C.sudo = (args) => {
@@ -749,7 +836,7 @@ function complete() {
 }
 term.addEventListener("click", () => { if (!getSelection().toString()) input.focus({ preventScroll: true }); });
 
-const CHIPS = ["help", "about", "research", "experience", "projects", "skills", "contact", "neofetch", "lb 10"];
+const CHIPS = ["help", "about", "research", "experience", "projects", "skills", "contact", "neofetch", "trace", "lb 10"];
 $("chips").append(...CHIPS.map(c => h("button", { type: "button", onclick: (e) => { e.stopPropagation(); run(c); input.focus({ preventScroll: true }); } }, c)));
 
 /* ── mode / theme ────────────────────────────────── */
