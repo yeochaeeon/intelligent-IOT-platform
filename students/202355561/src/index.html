@@ -100,7 +100,8 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
 .block { margin: 4px 0 10px; }
 .bullet { display: grid; grid-template-columns: 2ch 1fr; }
 .neofetch-layout { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 18px; align-items: center; }
-.neofetch-art { white-space: pre; font-size: 17px; line-height: 1.05; font-weight: 600; }
+.neofetch-art { display: grid; grid-auto-rows: 1em; font: 17px/1 "Apple Symbols", "Apple Braille", "Segoe UI Symbol", "Noto Sans Symbols 2", monospace; }
+.neofetch-art .braille-cell { display: block; width: 1em; height: 1em; text-align: center; }
 .neofetch-art .rainbow-green { color: #a6d88e; }
 .neofetch-art .rainbow-yellow { color: #f7cc7c; }
 .neofetch-art .rainbow-coral { color: #ef8c96; }
@@ -111,7 +112,7 @@ a:focus-visible, button:focus-visible, .cmd:focus-visible { outline: 2px solid v
 [data-theme="paper"] .neofetch-art .rainbow-coral { color: #ad3e50; }
 [data-theme="paper"] .neofetch-art .rainbow-purple { color: #7641a0; }
 [data-theme="paper"] .neofetch-art .rainbow-blue { color: #286aa0; }
-@media (max-width: 700px) { .neofetch-layout { grid-template-columns: 1fr; gap: 8px; } .neofetch-art { font-size: 11px; overflow-x: auto; max-width: 100%; } }
+@media (max-width: 700px) { .neofetch-layout { grid-template-columns: 1fr; gap: 8px; } .neofetch-art { font-size: 9px; overflow-x: auto; max-width: 100%; } }
 .trace-flow { display: grid; gap: 6px; max-width: 640px; margin: 10px 0; }
 .trace-step { display: grid; grid-template-columns: 2ch 9ch minmax(0, 1fr); gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); overflow-wrap: anywhere; }
 .trace-step.active { border-color: var(--z); color: var(--text); background: var(--sel); }
@@ -661,8 +662,12 @@ C.neofetch = async () => {
   ] : [[span("err", "pod info unavailable")]];
   const t = h("div", { class: "neofetch-layout" });
   const tones = ["rainbow-green", "rainbow-yellow", "rainbow-coral", "rainbow-purple", "rainbow-blue"];
-  const left = h("div", { class: "neofetch-art", role: "img", "aria-label": "색을 입힌 점자 문자 로봇팔" },
-    ...art.flatMap((row, index) => [span(tones[Math.min(4, Math.floor(index / 4))], row), "\n"]));
+  const width = Math.max(...art.map(row => row.length));
+  const cells = art.flatMap((row, index) => Array.from({ length: width }, (_, column) => {
+    const character = row[column] || "⠀";
+    return h("span", { class: `braille-cell ${tones[Math.min(4, Math.floor(index / 4))]}` }, character === "⠀" ? "" : character);
+  }));
+  const left = h("div", { class: "neofetch-art", role: "img", "aria-label": "색을 입힌 점자 문자 로봇팔", style: `grid-template-columns: repeat(${width}, 1em)` }, ...cells);
   const right = h("div", {}, ...info.map(r => h("div", {}, ...r)));
   t.append(left, right);
   out.append(t);
